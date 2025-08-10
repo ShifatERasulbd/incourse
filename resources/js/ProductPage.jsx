@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 
 const products = [
   { image: '/Frontend/slider/slider1.jpg', name: 'Power Generator', desc: 'High-efficiency generator for industrial use.', category: 'Generators' },
@@ -30,7 +30,6 @@ export default function ProductPage() {
     ? products.filter((p) => p.category === selectedCategory)
     : products;
 
-  // Handler to change category by updating URL query
   const handleFilterChange = (category) => {
     if (category === '') {
       navigate('/products');
@@ -42,24 +41,16 @@ export default function ProductPage() {
   return (
     <div
       style={{
-        padding: '3rem 0',
-        background: '#f8fafc',
+        padding: '3rem 1rem',
+        // Removed background color here
         minHeight: '60vh',
-        width: '100vw',
-        marginLeft: 'calc(-50vw + 50%)',
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        boxSizing: 'border-box',
       }}
     >
-      <h2
-        style={{
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          color: '#272863',
-          marginBottom: '2rem',
-          textAlign: 'center',
-        }}
-      >
-        Our Products
-      </h2>
+    
 
       <div
         className="layout"
@@ -67,8 +58,6 @@ export default function ProductPage() {
           display: 'flex',
           alignItems: 'flex-start',
           gap: '2rem',
-          maxWidth: '1200px',
-          margin: '0 auto',
           flexWrap: 'wrap',
         }}
       >
@@ -130,11 +119,11 @@ export default function ProductPage() {
 
         {/* Product Grid */}
         <div
+          className="product-grid"
           style={{
-            display: 'flex',
-            flexWrap: 'wrap',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
             gap: '1rem',
-            justifyContent: 'flex-start',
             flex: 1,
           }}
         >
@@ -149,9 +138,10 @@ export default function ProductPage() {
                   boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
                   textAlign: 'center',
                   overflow: 'hidden',
-                  minWidth: '160px',
-                  maxWidth: '180px',
-                  flex: '1 1 160px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  boxSizing: 'border-box',
                 }}
               >
                 <img
@@ -161,11 +151,10 @@ export default function ProductPage() {
                     width: '100%',
                     height: '240px',
                     objectFit: 'cover',
-                    borderRadius: 0,
                     display: 'block',
                   }}
                 />
-                <div style={{ padding: '1rem' }}>
+                <div style={{ padding: '1rem', flexGrow: 1 }}>
                   <h3
                     style={{
                       fontSize: '1.1rem',
@@ -185,6 +174,25 @@ export default function ProductPage() {
                     {product.desc}
                   </p>
                 </div>
+                <Link
+                  to={`/products/${encodeURIComponent(
+                    product.name.toLowerCase().replace(/\s+/g, '-')
+                  )}`}
+                  style={{
+                    display: 'inline-block',
+                    margin: '1rem',
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#272863',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  View Details
+                </Link>
               </div>
             ))
           ) : (
@@ -195,17 +203,26 @@ export default function ProductPage() {
 
       {/* Responsive styles */}
       <style>{`
+        @media (max-width: 1024px) {
+          .product-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
         @media (max-width: 768px) {
           .layout {
             flex-direction: column;
           }
           .filter-area {
-            width: 100%;
+            width: 100% !important;
             margin-bottom: 1rem;
           }
-          .product-card {
-            flex: 1 1 calc(50% - 1rem);
-            max-width: calc(50% - 1rem);
+          .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (max-width: 480px) {
+          .product-grid {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>

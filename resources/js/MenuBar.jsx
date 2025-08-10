@@ -1,10 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+
+const categories = ['Generators', 'Solar', 'UPS', 'Batteries', 'Inverters'];
+
+const menuItems = [
+  { label: 'Home' },
+  { label: 'Products', submenu: categories },
+  { label: 'About' },
+  { label: 'News' },
+  { label: 'Contact Us' },
+];
 
 export default function MenuBar() {
   const [isMobile, setIsMobile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openSubmenuIndex, setOpenSubmenuIndex] = useState(null); // For mobile submenu toggle
+  const [openSubmenuIndex, setOpenSubmenuIndex] = useState(null); // for mobile submenu toggle & desktop submenu click toggle
+
+  const menuRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -19,15 +31,29 @@ export default function MenuBar() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const menuItems = [
-    { label: 'Home' },
-    { label: 'Products', submenu: ['Product A', 'Product B', 'Product C'] },
-    { label: 'About' },
-    { label: 'News' },
-    { label: 'Contact Us' },
-  ];
+  // Close submenu if click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
+        setOpenSubmenuIndex(null);
+      }
+    };
 
-  // Toggle submenu on mobile
+    if (openSubmenuIndex !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openSubmenuIndex]);
+
+  // Toggle submenu on desktop (click)
   const toggleSubmenu = (idx) => {
     setOpenSubmenuIndex((current) => (current === idx ? null : idx));
   };
@@ -48,6 +74,7 @@ export default function MenuBar() {
       }}
     >
       <div
+        ref={menuRef}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -72,9 +99,11 @@ export default function MenuBar() {
           Incourses
         </div>
 
-        {/* Desktop menu with hover dropdown */}
+        {/* Desktop menu */}
         {!isMobile && (
           <nav
+            role="menubar"
+            aria-label="Primary Navigation"
             style={{
               display: 'flex',
               gap: '2rem',
@@ -86,48 +115,118 @@ export default function MenuBar() {
             }}
             className="menu-bar-nav"
           >
-            {menuItems.map(({ label, submenu }, idx) => (
-              label === 'Home' ? (
-                <Link
-                  to="/"
-                  key={idx}
-                  style={{
-                    color: '#1F1F66',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    position: 'relative',
-                    fontSize: '1rem',
-                    userSelect: 'none',
-                    padding: '0.25rem 0',
-                    transition: 'color 0.2s',
-                    textDecoration: 'none',
-                  }}
-                  className="menu-item"
-                >
-                  {label}
-                </Link>
-              ) : label === 'Products' ? (
-                <Link
-                  to="/products"
-                  key={idx}
-                  style={{
-                    color: '#1F1F66',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    position: 'relative',
-                    fontSize: '1rem',
-                    userSelect: 'none',
-                    padding: '0.25rem 0',
-                    transition: 'color 0.2s',
-                    textDecoration: 'none',
-                  }}
-                  className="menu-item"
-                >
-                  {label} {submenu && <span style={{ fontSize: '0.7em', marginLeft: '0.3em' }}>▼</span>}
-                </Link>
-              ) : (
+            {menuItems.map(({ label, submenu }, idx) => {
+              if (label === 'Home') {
+                return (
+                  <Link
+                    to="/"
+                    key={idx}
+                    role="menuitem"
+                    tabIndex={0}
+                    className="menu-item"
+                    style={{
+                      color: '#1F1F66',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      position: 'relative',
+                      fontSize: '1rem',
+                      userSelect: 'none',
+                      padding: '0.25rem 0',
+                      transition: 'color 0.2s',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {label}
+                  </Link>
+                );
+              }
+
+              if (label === 'Products') {
+                return (
+                  <div
+                    key={idx}
+                    role="menuitem"
+                    aria-haspopup="true"
+                    aria-expanded={openSubmenuIndex === idx}
+                    tabIndex={0}
+                    onClick={() => toggleSubmenu(idx)}
+                    className="menu-item"
+                    style={{
+                      position: 'relative',
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: '#1F1F66',
+                        whiteSpace: 'nowrap',
+                        fontSize: '1rem',
+                        padding: '0.25rem 0',
+                        display: 'inline-block',
+                        userSelect: 'none',
+                      }}
+                    >
+                      {label}{' '}
+                      <span style={{ fontSize: '0.7em', marginLeft: '0.3em' }}>
+                        ▼
+                      </span>
+                    </span>
+                    {submenu && openSubmenuIndex === idx && (
+                      <div
+                        role="menu"
+                        className="submenu"
+                        style={{
+                          display: 'block',
+                          position: 'absolute',
+                          top: '2.2rem',
+                          left: 0,
+                          background: '#fff',
+                          boxShadow: '0 8px 32px rgba(28,30,92,0.10)',
+                          borderRadius: '12px',
+                          minWidth: '180px',
+                          zIndex: 10000,
+                          padding: '0.5rem 0',
+                        }}
+                      >
+                        {submenu.map((sub, subIdx) => (
+                          <Link
+                            key={subIdx}
+                            role="menuitem"
+                            to={`/products?category=${encodeURIComponent(sub)}`}
+                            className="submenu-item"
+                            style={{
+                              display: 'block',
+                              padding: '0.7rem 1.2rem',
+                              color: '#272863',
+                              fontSize: '1rem',
+                              cursor: 'pointer',
+                              borderBottom:
+                                subIdx < submenu.length - 1
+                                  ? '1px solid #f3f3f3'
+                                  : 'none',
+                              borderRadius: '8px',
+                              margin: '2px 0',
+                              textDecoration: 'none',
+                            }}
+                            onClick={() => setOpenSubmenuIndex(null)}
+                          >
+                            {sub}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // Other menu items without submenu
+              return (
                 <div
                   key={idx}
+                  role="menuitem"
+                  tabIndex={0}
+                  className="menu-item"
                   style={{
                     color: '#1F1F66',
                     cursor: 'pointer',
@@ -138,38 +237,11 @@ export default function MenuBar() {
                     padding: '0.25rem 0',
                     transition: 'color 0.2s',
                   }}
-                  className="menu-item"
                 >
-                  {label} {submenu && <span style={{ fontSize: '0.7em', marginLeft: '0.3em' }}>▼</span>}
-                  {submenu && (
-                    <div className="submenu">
-                      {submenu.map((sub, subIdx) => (
-                        <div
-                          key={subIdx}
-                          style={{
-                            padding: '0.7rem 1.2rem',
-                            color: '#272863',
-                            fontSize: '1rem',
-                            cursor: 'pointer',
-                            borderBottom: subIdx < submenu.length - 1 ? '1px solid #f3f3f3' : 'none',
-                            transition: 'background 0.2s, color 0.2s',
-                            borderRadius: '8px',
-                            margin: '2px 0',
-                          }}
-                          className="submenu-item"
-                          tabIndex={0}
-                          role="button"
-                          onClick={() => alert(`Clicked ${sub}`)}
-                          onKeyDown={() => {}}
-                        >
-                          {sub}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  {label}
                 </div>
-              )
-            ))}
+              );
+            })}
           </nav>
         )}
 
@@ -259,25 +331,26 @@ export default function MenuBar() {
                   }}
                 >
                   {submenu.map((sub, subIdx) => (
-                    <div
+                    <Link
                       key={subIdx}
+                      to={`/products?category=${encodeURIComponent(sub)}`}
                       onClick={() => {
-                        alert(`Clicked ${sub}`);
                         setMenuOpen(false);
                         setOpenSubmenuIndex(null);
                       }}
                       style={{
+                        display: 'block',
                         padding: '0.5rem 0',
                         color: '#333',
                         cursor: 'pointer',
                         fontSize: '1rem',
+                        textDecoration: 'none',
                       }}
                       tabIndex={0}
-                      role="button"
-                      onKeyDown={() => {}}
+                      role="menuitem"
                     >
                       {sub}
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}
@@ -286,34 +359,15 @@ export default function MenuBar() {
         </nav>
       )}
 
-      {/* Hide scrollbar for webkit browsers */}
       <style>{`
         .menu-bar-nav::-webkit-scrollbar {
           display: none;
         }
-        .menu-item:hover > .submenu {
-          display: block;
-          opacity: 1;
-          pointer-events: auto;
-        }
-        .submenu {
-          display: none;
-          position: absolute;
-          top: 2.2rem;
-          left: 0;
-          background: #fff;
-          box-shadow: 0 8px 32px rgba(28,30,92,0.10);
-          border-radius: 12px;
-          min-width: 180px;
-          z-index: 10000;
-          padding: 0.5rem 0;
-          opacity: 0;
-          pointer-events: none;
-          transition: opacity 0.3s;
-        }
-        .submenu-item:hover {
+        .submenu-item:hover,
+        .submenu-item:focus {
           background: #f8fafc;
           color: #1F1F66;
+          outline: none;
         }
       `}</style>
     </header>

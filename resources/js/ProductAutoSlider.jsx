@@ -126,12 +126,13 @@ export default function ProductAutoSlider() {
           color: #fff;
           border: none;
           border-radius: 8px;
-          padding: 0.6rem 1rem;
+          padding: 0.6rem 1.5rem;
           cursor: pointer;
           font-weight: 600;
           font-size: 1rem;
           transition: background-color 0.3s ease;
-          width: 100%;
+          display: inline-block;
+          margin: 1rem auto 0 auto;
         }
         .view-details-btn:hover {
           background-color: #151742;
@@ -188,10 +189,16 @@ export default function ProductAutoSlider() {
         >
           {products.map((product, idx) => (
             <div key={idx} className="product-card">
-              <img src={product.image} alt={product.name} />
+              <img
+                src={product.image}
+                alt={product.name}
+              />
               <h3 style={{ fontSize: '1.1rem', color: '#272863', margin: '0.5rem 0' }}>{product.name}</h3>
               <p style={{ fontSize: '0.95rem', color: '#444', margin: '0 0 1rem 0' }}>{product.desc}</p>
-              <button className="view-details-btn" onClick={() => alert(`Viewing details for ${product.name}`)}>
+              <button
+                className="view-details-btn"
+                onClick={() => alert(`Viewing details for ${product.name}`)}
+              >
                 View Details
               </button>
             </div>
@@ -201,3 +208,4 @@ export default function ProductAutoSlider() {
     </>
   );
 }
+  

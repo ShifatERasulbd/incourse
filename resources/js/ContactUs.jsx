@@ -34,110 +34,112 @@ export default function ContactUs() {
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
-      {/* Top full width image */}
-      <div style={{ width: '100%', marginBottom: '2rem', overflow: 'hidden', borderRadius: '12px' }}>
+    <>
+      {/* Full width top image outside max-width container */}
+      <div style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', overflow: 'hidden', borderRadius: '0 0 12px 12px' }}>
         <img
-          src="/Frontend/slider/slider2.jpg" // replace with your desired image path
+          src="/Frontend/slider/slider2.jpg"
           alt="Contact Us Banner"
           style={{ width: '100%', height: '300px', objectFit: 'cover', display: 'block' }}
         />
       </div>
 
-      {/* Content below image: two columns */}
-      <div style={{
-        display: 'flex',
-        gap: '2rem',
-        flexWrap: 'wrap',
-        padding: '2rem',
-        borderRadius: '12px',
-        // background removed here
-        boxShadow: '0 4px 16px rgba(0,0,0,0.08)'
-      }}>
-        {/* Left column - Contact Info */}
+      {/* Main container with max width and centered */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
+        {/* Content below image: two columns */}
         <div style={{
-          flex: '1 1 300px',
-          color: '#272863',
-          fontSize: '1.1rem',
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          gap: '1rem',
-          paddingRight: '1rem',
-          borderRight: '2px solid #ddd',
-          minWidth: '280px',
+          gap: '2rem',
+          flexWrap: 'wrap',
+          padding: '2rem',
+          borderRadius: '12px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.08)'
         }}>
-          <h2 style={{ marginBottom: '1rem' }}>Get in Touch</h2>
-          <p><strong>Address:</strong> 123 Power St, Energy City, Country</p>
-          <p><strong>Phone:</strong> +880 1234 567890</p>
-          <p><strong>Email:</strong> support@incourses.com</p>
-          <p><strong>Working Hours:</strong> Mon - Fri, 9am - 6pm</p>
-          <p>Feel free to reach out with any questions or requests. We're here to help!</p>
-        </div>
+          {/* Left column - Contact Info */}
+          <div style={{
+            flex: '1 1 300px',
+            color: '#272863',
+            fontSize: '1.1rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            gap: '1rem',
+            paddingRight: '1rem',
+            borderRight: '2px solid #ddd',
+            minWidth: '280px',
+          }}>
+            <h2 style={{ marginBottom: '1rem' }}>Get in Touch</h2>
+            <p><strong>Address:</strong> 123 Power St, Energy City, Country</p>
+            <p><strong>Phone:</strong> +880 1234 567890</p>
+            <p><strong>Email:</strong> support@incourses.com</p>
+            <p><strong>Working Hours:</strong> Mon - Fri, 9am - 6pm</p>
+            <p>Feel free to reach out with any questions or requests. We're here to help!</p>
+          </div>
 
-        {/* Right column - Contact Form */}
-        <div style={{ flex: '1 1 400px', minWidth: '280px' }}>
-          <h2 style={{ color: '#272863', marginBottom: '1.5rem' }}>Contact Us</h2>
+          {/* Right column - Contact Form */}
+          <div style={{ flex: '1 1 400px', minWidth: '280px' }}>
+            <h2 style={{ color: '#272863', marginBottom: '1.5rem' }}>Contact Us</h2>
 
-          <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-            <label htmlFor="name" style={labelStyle}>Name</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleChange}
-              style={inputStyle}
-              placeholder="Your full name"
-            />
+            <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+              <label htmlFor="name" style={labelStyle}>Name</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                value={formData.name}
+                onChange={handleChange}
+                style={inputStyle}
+                placeholder="Your full name"
+              />
 
-            <label htmlFor="email" style={labelStyle}>Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              style={inputStyle}
-              placeholder="your.email@example.com"
-            />
+              <label htmlFor="email" style={labelStyle}>Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                style={inputStyle}
+                placeholder="your.email@example.com"
+              />
 
-            <label htmlFor="subject" style={labelStyle}>Subject</label>
-            <input
-              id="subject"
-              name="subject"
-              type="text"
-              value={formData.subject}
-              onChange={handleChange}
-              style={inputStyle}
-              placeholder="Subject of your message"
-            />
+              <label htmlFor="subject" style={labelStyle}>Subject</label>
+              <input
+                id="subject"
+                name="subject"
+                type="text"
+                value={formData.subject}
+                onChange={handleChange}
+                style={inputStyle}
+                placeholder="Subject of your message"
+              />
 
-            <label htmlFor="message" style={labelStyle}>Message</label>
-            <textarea
-              id="message"
-              name="message"
-              rows="5"
-              value={formData.message}
-              onChange={handleChange}
-              style={{ ...inputStyle, resize: 'vertical', minHeight: '120px' }}
-              placeholder="Write your message here..."
-            />
+              <label htmlFor="message" style={labelStyle}>Message</label>
+              <textarea
+                id="message"
+                name="message"
+                rows="5"
+                value={formData.message}
+                onChange={handleChange}
+                style={{ ...inputStyle, resize: 'vertical', minHeight: '120px' }}
+                placeholder="Write your message here..."
+              />
 
-            <button
-              type="submit"
-              style={submitBtnStyle}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1f1f66')}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#272863')}
-            >
-              Send Message
-            </button>
-          </form>
+              <button
+                type="submit"
+                style={submitBtnStyle}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1f1f66')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#272863')}
+              >
+                Send Message
+              </button>
+            </form>
 
-          {status && <p style={{ marginTop: '1rem', color: '#444', fontWeight: '600' }}>{status}</p>}
+            {status && <p style={{ marginTop: '1rem', color: '#444', fontWeight: '600' }}>{status}</p>}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

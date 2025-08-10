@@ -220,6 +220,75 @@ export default function MenuBar() {
                 );
               }
 
+              if (label === 'About') {
+                return (
+                  <Link
+                    to="/about"
+                    key={idx}
+                    className="menu-item"
+                    style={{
+                      color: '#1F1F66',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      position: 'relative',
+                      fontSize: '1rem',
+                      userSelect: 'none',
+                      padding: '0.25rem 0',
+                      transition: 'color 0.2s',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {label}
+                  </Link>
+                );
+              }
+
+              if (label === 'News') {
+                return (
+                  <Link
+                    to="/news" // Change this route if your blog page uses a different path
+                    key={idx}
+                    className="menu-item"
+                    style={{
+                      color: '#1F1F66',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      position: 'relative',
+                      fontSize: '1rem',
+                      userSelect: 'none',
+                      padding: '0.25rem 0',
+                      transition: 'color 0.2s',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {label}
+                  </Link>
+                );
+              }
+
+               if (label === 'Contact Us') {
+                return (
+                  <Link
+                    to="/Contact-Us" // Change this route if your blog page uses a different path
+                    key={idx}
+                    className="menu-item"
+                    style={{
+                      color: '#1F1F66',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      position: 'relative',
+                      fontSize: '1rem',
+                      userSelect: 'none',
+                      padding: '0.25rem 0',
+                      transition: 'color 0.2s',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {label}
+                  </Link>
+                );
+              }
+
               // Other menu items without submenu
               return (
                 <div

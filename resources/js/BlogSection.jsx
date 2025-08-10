@@ -55,12 +55,12 @@ export default function BlogSection() {
     return (
         <div style={{
             background: '#f8fafc',
-            
             width: '100vw',
             marginLeft: 'calc(-50vw + 50%)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            paddingBottom: '4rem',  // added padding before footer
         }}>
             <h2 style={{
                 fontSize: '2rem',
@@ -74,7 +74,7 @@ export default function BlogSection() {
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                gap: '1rem', // reduced gap
+                gap: '1rem',
                 width: '100%',
                 maxWidth: '1200px'
             }}>
@@ -83,7 +83,7 @@ export default function BlogSection() {
                         background: '#fff',
                         borderRadius: '18px',
                         boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-                        overflow: 'hidden', // so image aligns with card edges
+                        overflow: 'hidden',
                         display: 'flex',
                         flexDirection: 'column'
                     }}>
@@ -94,7 +94,7 @@ export default function BlogSection() {
                                 width: '100%',
                                 height: '160px',
                                 objectFit: 'cover',
-                                display: 'block', // no extra space
+                                display: 'block',
                                 background: '#eee'
                             }}
                         />

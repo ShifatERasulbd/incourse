@@ -1,231 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-
-const products = [
-  { image: '/Frontend/slider/slider1.jpg', name: 'Power Generator', desc: 'High-efficiency generator for industrial use.', category: 'Generators' },
-  { image: '/Frontend/slider/slider2.jpg', name: 'Solar Panel', desc: 'Eco-friendly solar panel for homes and businesses.', category: 'Solar' },
-  { image: '/Frontend/slider/slider3.jpg', name: 'UPS System', desc: 'Reliable UPS for uninterrupted power supply.', category: 'UPS' },
-  { image: '/Frontend/slider/slider1.jpg', name: 'Battery Pack', desc: 'Long-lasting battery pack for backup.', category: 'Batteries' },
-  { image: '/Frontend/slider/slider2.jpg', name: 'Smart Inverter', desc: 'Efficient inverter for smart energy management.', category: 'Inverters' },
-];
-
-const categories = ['Generators', 'Solar', 'UPS', 'Batteries', 'Inverters'];
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+import React, { useState } from "react";
+import "./ProductPage.css";
 
 export default function ProductPage() {
-  const query = useQuery();
-  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const categoryFromQuery = query.get('category') || '';
-  const [selectedCategory, setSelectedCategory] = useState(categoryFromQuery);
+  const products = [
+    { id: 1, name: "Generator 1", category: "Generators", image: "/Frontend/slider/slider1.jpg", desc: "High performance generator" },
+    { id: 2, name: "Solar Panel 1", category: "Solar", image: "/Frontend/slider/slider2.jpg", desc: "Efficient solar panel" },
+    { id: 3, name: "UPS 1", category: "UPS", image: "/Frontend/slider/slider3.jpg", desc: "Reliable UPS backup" },
+    { id: 4, name: "Battery 1", category: "Batteries", image: "/Frontend/slider/slider1.jpg", desc: "Long-lasting battery" },
+    { id: 5, name: "Inverter 1", category: "Inverters", image: "/Frontend/slider/slider2.jpg", desc: "Smart inverter" },
+    { id: 6, name: "Generator 2", category: "Generators", image: "/Frontend/slider/slider3.jpg", desc: "Fuel efficient model" },
+    { id: 7, name: "Solar Panel 2", category: "Solar", image: "/Frontend/slider/slider1.jpg", desc: "Premium solar panel" },
+    { id: 8, name: "UPS 2", category: "UPS", image: "/Frontend/slider/slider2.jpg", desc: "Compact UPS system" },
+  ];
 
-  useEffect(() => {
-    setSelectedCategory(categoryFromQuery);
-  }, [categoryFromQuery]);
+  const categories = ["All", "Generators", "Solar", "UPS", "Batteries", "Inverters"];
 
-  const filteredProducts = selectedCategory
-    ? products.filter((p) => p.category === selectedCategory)
-    : products;
-
-  const handleFilterChange = (category) => {
-    if (category === '') {
-      navigate('/products');
-    } else {
-      navigate(`/products?category=${encodeURIComponent(category)}`);
-    }
-  };
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter((p) => p.category === selectedCategory);
 
   return (
-    <div
-      style={{
-        padding: '3rem 1rem',
-        // Removed background color here
-        minHeight: '60vh',
-        width: '100%',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        boxSizing: 'border-box',
-      }}
-    >
-    
-
-      <div
-        className="layout"
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '2rem',
-          flexWrap: 'wrap',
-        }}
-      >
-        {/* Filter Section */}
-        <div
-          className="filter-area"
-          style={{
-            background: '#fff',
-            padding: '1rem',
-            borderRadius: '12px',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-            width: '250px',
-            flexShrink: 0,
-          }}
-        >
-          <h3 style={{ marginBottom: '1rem', color: '#272863' }}>
-            Filter by Category
-          </h3>
+    <div className="product-grid">
+      {/* Sidebar */}
+      <aside className="product-sidebar">
+        <h2>Filter</h2>
+        <ul>
           {categories.map((cat) => (
-            <div key={cat} style={{ marginBottom: '0.5rem' }}>
-              <label
-                style={{
-                  cursor: 'pointer',
-                  fontSize: '0.95rem',
-                  color: selectedCategory === cat ? '#272863' : '#333',
-                  fontWeight: selectedCategory === cat ? 'bold' : 'normal',
-                  userSelect: 'none',
-                }}
-              >
-                <input
-                  type="radio"
-                  name="category"
-                  value={cat}
-                  checked={selectedCategory === cat}
-                  onChange={() => handleFilterChange(cat)}
-                  style={{ marginRight: '0.5rem' }}
-                />
-                {cat}
-              </label>
-            </div>
-          ))}
-          {selectedCategory && (
-            <button
-              onClick={() => handleFilterChange('')}
-              style={{
-                marginTop: '1rem',
-                padding: '0.5rem 1rem',
-                border: 'none',
-                background: '#272863',
-                color: '#fff',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
+            <li
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={selectedCategory === cat ? "active" : ""}
             >
-              Clear Filter
-            </button>
-          )}
-        </div>
+              {cat}
+            </li>
+          ))}
+        </ul>
+      </aside>
 
-        {/* Product Grid */}
-        <div
-          className="product-grid"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '1rem',
-            flex: 1,
-          }}
-        >
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product, idx) => (
-              <div
-                key={idx}
-                className="product-card"
-                style={{
-                  background: '#fff',
-                  borderRadius: '18px',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-                  textAlign: 'center',
-                  overflow: 'hidden',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  boxSizing: 'border-box',
-                }}
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  style={{
-                    width: '100%',
-                    height: '240px',
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                />
-                <div style={{ padding: '1rem', flexGrow: 1 }}>
-                  <h3
-                    style={{
-                      fontSize: '1.1rem',
-                      color: '#272863',
-                      margin: '0.5rem 0',
-                    }}
-                  >
-                    {product.name}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: '0.95rem',
-                      color: '#444',
-                      margin: 0,
-                    }}
-                  >
-                    {product.desc}
-                  </p>
-                </div>
-                <Link
-                  to={`/products/${encodeURIComponent(
-                    product.name.toLowerCase().replace(/\s+/g, '-')
-                  )}`}
-                  style={{
-                    display: 'inline-block',
-                    margin: '1rem',
-                    padding: '0.5rem 1rem',
-                    backgroundColor: '#272863',
-                    color: '#fff',
-                    borderRadius: '6px',
-                    textDecoration: 'none',
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                  }}
-                >
-                  View Details
-                </Link>
-              </div>
-            ))
-          ) : (
-            <p style={{ color: '#666' }}>No products found in this category.</p>
-          )}
-        </div>
-      </div>
-
-      {/* Responsive styles */}
-      <style>{`
-        @media (max-width: 1024px) {
-          .product-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-        }
-        @media (max-width: 768px) {
-          .layout {
-            flex-direction: column;
-          }
-          .filter-area {
-            width: 100% !important;
-            margin-bottom: 1rem;
-          }
-          .product-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-        @media (max-width: 480px) {
-          .product-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
+      {/* Products */}
+      <section className="product-cards">
+        {filteredProducts.map((p) => (
+          <div className="product-card" key={p.id}>
+            <img src={p.image} alt={p.name} />
+            <h3>{p.name}</h3>
+            <p>{p.desc}</p>
+            <button className="view-btn">View Details</button>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }

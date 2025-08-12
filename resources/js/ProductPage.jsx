@@ -1,26 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import frontendService from "./services/frontendService";
 import "./ProductPage.css";
+
+// Default fallback data
+const defaultProducts = [
+  { id: 1, name: "Generator 1", category: { name: "Generators" }, image_path: "Frontend/slider/slider1.jpg", short_description: "High performance generator" },
+  { id: 2, name: "Solar Panel 1", category: { name: "Solar" }, image_path: "Frontend/slider/slider2.jpg", short_description: "Efficient solar panel" },
+  { id: 3, name: "UPS 1", category: { name: "UPS" }, image_path: "Frontend/slider/slider3.jpg", short_description: "Reliable UPS backup" },
+  { id: 4, name: "Battery 1", category: { name: "Batteries" }, image_path: "Frontend/slider/slider1.jpg", short_description: "Long-lasting battery" },
+  { id: 5, name: "Inverter 1", category: { name: "Inverters" }, image_path: "Frontend/slider/slider2.jpg", short_description: "Smart inverter" },
+  { id: 6, name: "Generator 2", category: { name: "Generators" }, image_path: "Frontend/slider/slider3.jpg", short_description: "Fuel efficient model" },
+  { id: 7, name: "Solar Panel 2", category: { name: "Solar" }, image_path: "Frontend/slider/slider1.jpg", short_description: "Premium solar panel" },
+  { id: 8, name: "UPS 2", category: { name: "UPS" }, image_path: "Frontend/slider/slider2.jpg", short_description: "Compact UPS system" },
+];
+
+const defaultCategories = ["All", "Generators", "Solar", "UPS", "Batteries", "Inverters"];
 
 export default function ProductPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [products, setProducts] = useState(defaultProducts);
+  const [categories, setCategories] = useState(defaultCategories);
+  const [loading, setLoading] = useState(true);
 
-  const products = [
-    { id: 1, name: "Generator 1", category: "Generators", image: "/Frontend/slider/slider1.jpg", desc: "High performance generator" },
-    { id: 2, name: "Solar Panel 1", category: "Solar", image: "/Frontend/slider/slider2.jpg", desc: "Efficient solar panel" },
-    { id: 3, name: "UPS 1", category: "UPS", image: "/Frontend/slider/slider3.jpg", desc: "Reliable UPS backup" },
-    { id: 4, name: "Battery 1", category: "Batteries", image: "/Frontend/slider/slider1.jpg", desc: "Long-lasting battery" },
-    { id: 5, name: "Inverter 1", category: "Inverters", image: "/Frontend/slider/slider2.jpg", desc: "Smart inverter" },
-    { id: 6, name: "Generator 2", category: "Generators", image: "/Frontend/slider/slider3.jpg", desc: "Fuel efficient model" },
-    { id: 7, name: "Solar Panel 2", category: "Solar", image: "/Frontend/slider/slider1.jpg", desc: "Premium solar panel" },
-    { id: 8, name: "UPS 2", category: "UPS", image: "/Frontend/slider/slider2.jpg", desc: "Compact UPS system" },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch categories using frontend service
+        const categoriesResult = await frontendService.getCategories();
+        if (categoriesResult.success && categoriesResult.data && categoriesResult.data.length > 0) {
+          const categoryNames = ['All', ...categoriesResult.data.map(cat => cat.name)];
+          setCategories(categoryNames);
+        }
 
-  const categories = ["All", "Generators", "Solar", "UPS", "Batteries", "Inverters"];
+        // Fetch products using frontend service
+        const productsResult = await frontendService.getProducts();
+        if (productsResult.success && productsResult.data && productsResult.data.length > 0) {
+          setProducts(productsResult.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products/categories:', error);
+        // Keep default data
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const filteredProducts =
     selectedCategory === "All"
       ? products
-      : products.filter((p) => p.category === selectedCategory);
+      : products.filter((p) => p.category?.name === selectedCategory);
 
   return (
     <div className="product-grid">
@@ -44,9 +75,16 @@ export default function ProductPage() {
       <section className="product-cards">
         {filteredProducts.map((p) => (
           <div className="product-card" key={p.id}>
-            <img src={p.image} alt={p.name} />
+            <img
+              src={p.image_path ?
+                `/${p.image_path}` :
+                "/Frontend/slider/slider1.jpg"
+              }
+              alt={p.name}
+            />
             <h3>{p.name}</h3>
-            <p>{p.desc}</p>
+            <p>{p.short_description || p.description}</p>
+            {p.price && <div className="price">${p.price}</div>}
             <button className="view-btn">View Details</button>
           </div>
         ))}

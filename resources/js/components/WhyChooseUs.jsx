@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import frontendService from './services/frontendService';
+import frontendService from '../services/frontendService';
 
-// Default fallback data in case API fails
+// Default fallback data
 const defaultItems = [
   {
     id: 1,
@@ -49,7 +49,6 @@ const WhyChooseUs = ({ showTitle = true, maxItems = null, items: propItems }) =>
   const [items, setItems] = useState(propItems || defaultItems);
   const [loading, setLoading] = useState(!propItems);
 
-  // Fetch data from API if not provided as props
   useEffect(() => {
     if (propItems) {
       // If items are provided as props, use them directly
@@ -67,10 +66,7 @@ const WhyChooseUs = ({ showTitle = true, maxItems = null, items: propItems }) =>
 
     const fetchItems = async () => {
       try {
-        console.log('Fetching Why Choose Us data from API...');
         const result = await frontendService.getWhyChooseUs();
-        console.log('API Result:', result);
-
         if (result.success && result.data && result.data.length > 0) {
           let fetchedItems = result.data;
 
@@ -80,13 +76,10 @@ const WhyChooseUs = ({ showTitle = true, maxItems = null, items: propItems }) =>
           }
 
           setItems(fetchedItems);
-          console.log('✅ Successfully loaded Why Choose Us items:', fetchedItems);
-        } else {
-          console.log('⚠️ API returned no data, using fallback items');
         }
       } catch (error) {
-        console.error('❌ Failed to fetch why choose us items:', error);
-        // Keep default items as fallback
+        console.error('Failed to fetch why choose us items:', error);
+        // Keep default items
       } finally {
         setLoading(false);
       }
@@ -97,10 +90,10 @@ const WhyChooseUs = ({ showTitle = true, maxItems = null, items: propItems }) =>
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
         padding: '2rem',
         color: '#666'
       }}>
@@ -177,7 +170,7 @@ const WhyChooseUs = ({ showTitle = true, maxItems = null, items: propItems }) =>
                     }}
                   />
                 ) : item.icon ? (
-                  <i
+                  <i 
                     className={item.icon}
                     style={{
                       fontSize: '3rem',

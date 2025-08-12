@@ -1,16 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import frontendService from './services/frontendService';
+
+// Default fallback content
+const defaultContent = {
+  section_title: 'About Us',
+  main_text: 'Incourses is dedicated to providing innovative power solutions and global support for businesses of all sizes. Our mission is to deliver reliable energy and cutting-edge technology, ensuring our clients thrive in a rapidly changing world.',
+  banner_image_path: 'Frontend/slider/slider2.jpg',
+  main_image_path: 'Frontend/slider/slider1.jpg',
+  show_banner: true,
+  is_active: true,
+};
 
 export default function AboutUs() {
   const location = useLocation();
+  const [content, setContent] = useState(defaultContent);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const result = await frontendService.getAboutUs();
+        if (result.success && result.data) {
+          setContent(result.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch about us content:', error);
+        // Keep default content
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, []);
 
   return (
     <div style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)' }}>
       {/* Conditionally render banner image only on /about */}
-      {location.pathname === '/about' && (
+      {location.pathname === '/about' && content.show_banner && content.banner_image_path && (
         <div style={{ width: '100%', overflow: 'hidden', borderRadius: 0 }}>
           <img
-            src="/Frontend/slider/slider2.jpg" // change to your preferred image
+            src={`/${content.banner_image_path}`}
             alt="About Us Banner"
             style={{
               width: '100%',
@@ -95,13 +126,16 @@ export default function AboutUs() {
           <div className="aboutus-text">
             <div style={{ width: '100%' }}>
               <p style={{ fontSize: '1.15rem', lineHeight: '1.7', textAlign: 'center', margin: 0 }}>
-                Incourses is dedicated to providing innovative power solutions and global support for businesses of all sizes. Our mission is to deliver reliable energy and cutting-edge technology, ensuring our clients thrive in a rapidly changing world.
+                {content.main_text}
               </p>
             </div>
           </div>
           <div className="aboutus-image">
             <img
-              src="/Frontend/slider/slider1.jpg"
+              src={content.main_image_path ?
+                `/${content.main_image_path}` :
+                "/Frontend/slider/slider1.jpg"
+              }
               alt="About Us"
               onError={e => { e.target.style.background = '#c41c13'; e.target.alt = 'Image not found'; }}
             />

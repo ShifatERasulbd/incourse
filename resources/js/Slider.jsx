@@ -1,27 +1,73 @@
 import React, { useState, useEffect, useRef } from 'react';
+import frontendService from './services/frontendService';
 
-const slides = [
+// Fallback slides in case API fails
+const fallbackSlides = [
   {
     image: '/Frontend/slider/slider1.jpg',
     title: 'Power Solutions',
-    desc: 'Reliable energy for your business.'
+    description: 'Reliable energy for your business.'
   },
   {
     image: '/Frontend/slider/slider2.jpg',
     title: 'Innovative Products',
-    desc: 'Cutting-edge technology for every need.'
+    description: 'Cutting-edge technology for every need.'
   },
   {
     image: '/Frontend/slider/slider3.jpg',
     title: 'Global Support',
-    desc: 'We are here for you, worldwide.'
+    description: 'We are here for you, worldwide.'
   }
 ];
 
-export default function Slider() {
+
+export default function Slider({ slides: propSlides }) {
   const [current, setCurrent] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [slides, setSlides] = useState(propSlides || fallbackSlides);
+  const [loading, setLoading] = useState(!propSlides);
   const timeoutRef = useRef(null);
+
+  // Fetch sliders from API using frontend service (only if not provided as props)
+  useEffect(() => {
+    if (propSlides) {
+      // If slides are provided as props, transform them and skip API call
+      const transformedSlides = propSlides.map(slider => ({
+        image: slider.image_path ? `/${slider.image_path}` : '/Frontend/slider/slider1.jpg',
+        title: slider.title,
+        description: slider.description || '',
+        button_text: slider.button_text,
+        button_link: slider.button_link,
+      }));
+      setSlides(transformedSlides);
+      setLoading(false);
+      return;
+    }
+
+    const fetchSliders = async () => {
+      try {
+        const result = await frontendService.getSliders();
+        if (result.success && result.data && result.data.length > 0) {
+          // Transform API data to match component expectations
+          const transformedSlides = result.data.map(slider => ({
+            image: slider.image_path ? `/${slider.image_path}` : '/Frontend/slider/slider1.jpg',
+            title: slider.title,
+            description: slider.description || '',
+            button_text: slider.button_text,
+            button_link: slider.button_link,
+          }));
+          setSlides(transformedSlides);
+        }
+      } catch (error) {
+        console.error('Failed to fetch sliders:', error);
+        // Keep fallback slides
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSliders();
+  }, [propSlides]);
 
   useEffect(() => {
     // Detect mobile view
@@ -32,11 +78,63 @@ export default function Slider() {
   }, []);
 
   useEffect(() => {
-    timeoutRef.current = setTimeout(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 3500);
+    if (!loading && slides.length > 0) {
+      timeoutRef.current = setTimeout(() => {
+        setCurrent((prev) => (prev + 1) % slides.length);
+      }, 3500);
+    }
     return () => clearTimeout(timeoutRef.current);
-  }, [current]);
+  }, [current, loading, slides.length]);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          position: 'relative',
+          width: '100vw',
+          left: '50%',
+          right: '50%',
+          marginLeft: '-50vw',
+          marginRight: '-50vw',
+          overflow: 'hidden',
+          minHeight: '400px',
+          maxHeight: '500px',
+          height: '500px',
+          background: '#111',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <div style={{ color: '#fff', fontSize: '1.2rem' }}>Loading slides...</div>
+      </div>
+    );
+  }
+
+  if (!slides || slides.length === 0) {
+    return (
+      <div
+        style={{
+          position: 'relative',
+          width: '100vw',
+          left: '50%',
+          right: '50%',
+          marginLeft: '-50vw',
+          marginRight: '-50vw',
+          overflow: 'hidden',
+          minHeight: '400px',
+          maxHeight: '500px',
+          height: '500px',
+          background: '#111',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <div style={{ color: '#fff', fontSize: '1.2rem' }}>No slides available</div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -164,7 +262,7 @@ export default function Slider() {
               }}
             >
               <h2 style={{ fontSize: '2rem', margin: 0, fontWeight: 'bold' }}>{slide.title}</h2>
-              <p style={{ fontSize: '1.1rem', margin: '0.5rem 0 0', fontWeight: '500' }}>{slide.desc}</p>
+              <p style={{ fontSize: '1.1rem', margin: '0.5rem 0 0', fontWeight: '500' }}>{slide.description}</p>
             </div>
           </div>
         ))}

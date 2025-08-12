@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .success {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        .blog-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .blog-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .blog-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .blog-excerpt {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        .blog-meta {
+            font-size: 0.9rem;
+            color: #888;
+        }
+        button {
+            background-color: #c41c13;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        button:hover {
+            background-color: #a01610;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow: auto;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Blog API Test</h1>
+        <p>This page tests the Blog API endpoints directly.</p>
+        
+        <div id="status">
+            <p>Click "Test API" to check if the blog API is working...</p>
+        </div>
+        
+        <button onclick="testBlogListAPI()">Test Blog List API</button>
+        <button onclick="testBlogDetailAPI()">Test Blog Detail API</button>
+        <button onclick="debugBlogs()">Debug All Blogs</button>
+        <button onclick="clearResults()">Clear Results</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        let currentBlogs = [];
+
+        async function testBlogListAPI() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            statusDiv.innerHTML = '<p>Testing Blog List API...</p>';
+            
+            try {
+                // Test the frontend blogs endpoint
+                const response = await fetch('/api/frontend/blogs');
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    currentBlogs = result.data;
+                    statusDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Blog List API Test Successful!</h3>
+                            <p>Successfully fetched ${result.data.length} blog items</p>
+                            <p>Endpoint: /api/frontend/blogs</p>
+                        </div>
+                    `;
+                    
+                    displayBlogList(result.data);
+                } else {
+                    throw new Error(result.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Blog List API Test Failed</h3>
+                        <p>Error: ${error.message}</p>
+                        <p>Check:</p>
+                        <ul>
+                            <li>Is Laravel server running?</li>
+                            <li>Is the database migrated?</li>
+                            <li>Are there any blogs in the database?</li>
+                        </ul>
+                    </div>
+                `;
+                console.error('Blog List API Test Error:', error);
+            }
+        }
+
+        async function testBlogDetailAPI() {
+            if (currentBlogs.length === 0) {
+                alert('Please test the Blog List API first to get blog IDs');
+                return;
+            }
+
+            const blogId = currentBlogs[0].id;
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            statusDiv.innerHTML = '<p>Testing Blog Detail API...</p>';
+            
+            try {
+                // Test the blog detail endpoint
+                const response = await fetch(`/api/blogs/${blogId}`);
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    statusDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Blog Detail API Test Successful!</h3>
+                            <p>Successfully fetched blog details for ID: ${blogId}</p>
+                            <p>Endpoint: /api/blogs/${blogId}</p>
+                        </div>
+                    `;
+                    
+                    displayBlogDetail(result.data);
+                } else {
+                    throw new Error(result.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Blog Detail API Test Failed</h3>
+                        <p>Error: ${error.message}</p>
+                        <p>Blog ID tested: ${blogId}</p>
+                    </div>
+                `;
+                console.error('Blog Detail API Test Error:', error);
+            }
+        }
+        
+        function displayBlogList(blogs) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!blogs || blogs.length === 0) {
+                resultsDiv.innerHTML = '<p>No blogs returned from API</p>';
+                return;
+            }
+            
+            let html = '<h2>Blog List Results:</h2>';
+            
+            blogs.forEach(blog => {
+                html += `
+                    <div class="blog-item" onclick="testSpecificBlog(${blog.id})">
+                        <div class="blog-title">${blog.title}</div>
+                        <div class="blog-excerpt">${blog.excerpt || 'No excerpt available'}</div>
+                        <div class="blog-meta">
+                            ID: ${blog.id} | 
+                            Published: ${blog.published_date || blog.created_at} | 
+                            Status: ${blog.is_published ? 'Published' : 'Draft'} |
+                            Featured: ${blog.is_featured ? 'Yes' : 'No'}
+                        </div>
+                        <small style="color: #999;">Click to test detail API for this blog</small>
+                    </div>
+                `;
+            });
+            
+            html += `
+                <details style="margin-top: 2rem;">
+                    <summary style="cursor: pointer; font-weight: bold;">View Raw JSON</summary>
+                    <pre>${JSON.stringify(blogs, null, 2)}</pre>
+                </details>
+            `;
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function displayBlogDetail(blog) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = '<h2>Blog Detail Results:</h2>';
+            
+            html += `
+                <div style="border: 2px solid #c41c13; border-radius: 8px; padding: 1.5rem; margin: 1rem 0;">
+                    <h3 style="color: #c41c13; margin-top: 0;">${blog.title}</h3>
+                    
+                    ${blog.featured_image ? `
+                        <img src="/${blog.featured_image}" alt="${blog.title}" 
+                             style="width: 100%; max-width: 400px; height: 200px; object-fit: cover; border-radius: 8px; margin: 1rem 0;">
+                    ` : ''}
+                    
+                    <div style="margin: 1rem 0;">
+                        <strong>Excerpt:</strong><br>
+                        ${blog.excerpt || 'No excerpt available'}
+                    </div>
+                    
+                    <div style="margin: 1rem 0;">
+                        <strong>Content Preview:</strong><br>
+                        <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 1rem; border-radius: 4px;">
+                            ${blog.content ? blog.content.substring(0, 500) + '...' : 'No content available'}
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                        <div><strong>ID:</strong> ${blog.id}</div>
+                        <div><strong>Author:</strong> ${blog.author || 'Not specified'}</div>
+                        <div><strong>Published:</strong> ${blog.published_date || blog.created_at}</div>
+                        <div><strong>Status:</strong> ${blog.is_published ? 'Published' : 'Draft'}</div>
+                        <div><strong>Featured:</strong> ${blog.is_featured ? 'Yes' : 'No'}</div>
+                    </div>
+                    
+                    <div style="margin-top: 1rem;">
+                        <button onclick="window.open('/blog/${blog.id}', '_blank')" 
+                                style="background-color: #28a745;">
+                            View in Blog Detail Page
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            html += `
+                <details style="margin-top: 2rem;">
+                    <summary style="cursor: pointer; font-weight: bold;">View Raw JSON</summary>
+                    <pre>${JSON.stringify(blog, null, 2)}</pre>
+                </details>
+            `;
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        async function testSpecificBlog(blogId) {
+            const statusDiv = document.getElementById('status');
+            
+            statusDiv.innerHTML = `<p>Testing Blog Detail API for ID: ${blogId}...</p>`;
+            
+            try {
+                const response = await fetch(`/api/blogs/${blogId}`);
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    statusDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Blog Detail API Test Successful!</h3>
+                            <p>Successfully fetched blog details for ID: ${blogId}</p>
+                        </div>
+                    `;
+                    
+                    displayBlogDetail(result.data);
+                } else {
+                    throw new Error(result.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Blog Detail API Test Failed</h3>
+                        <p>Error: ${error.message}</p>
+                        <p>Blog ID: ${blogId}</p>
+                    </div>
+                `;
+                console.error('Blog Detail API Test Error:', error);
+            }
+        }
+        
+        async function debugBlogs() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+
+            statusDiv.innerHTML = '<p>Debugging blog database...</p>';
+
+            try {
+                const response = await fetch('/api/debug/blogs');
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    statusDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Blog Debug Successful!</h3>
+                            <p>Total blogs in database: ${result.data.total_blogs}</p>
+                            <p>Published blogs: ${result.data.published_blogs}</p>
+                        </div>
+                    `;
+
+                    let html = '<h2>Blog Database Debug:</h2>';
+
+                    html += `
+                        <div style="background: #e3f2fd; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+                            <h3>Summary:</h3>
+                            <ul>
+                                <li><strong>Total Blogs:</strong> ${result.data.total_blogs}</li>
+                                <li><strong>Published Blogs:</strong> ${result.data.published_blogs}</li>
+                                <li><strong>Unpublished Blogs:</strong> ${result.data.total_blogs - result.data.published_blogs}</li>
+                            </ul>
+                        </div>
+                    `;
+
+                    if (result.data.all_blogs.length > 0) {
+                        html += '<h3>All Blogs in Database:</h3>';
+                        result.data.all_blogs.forEach(blog => {
+                            html += `
+                                <div class="blog-item" style="background-color: ${blog.is_published ? '#e8f5e8' : '#ffebee'};">
+                                    <div class="blog-title">ID: ${blog.id} - ${blog.title}</div>
+                                    <div class="blog-meta">
+                                        Status: ${blog.is_published ? '✅ Published' : '❌ Not Published'} |
+                                        Created: ${blog.created_at}
+                                    </div>
+                                    <button onclick="testSpecificBlog(${blog.id})" style="margin-top: 0.5rem;">
+                                        Test Detail API for ID ${blog.id}
+                                    </button>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        html += '<p style="color: red;">❌ No blogs found in database!</p>';
+                    }
+
+                    html += `
+                        <details style="margin-top: 2rem;">
+                            <summary style="cursor: pointer; font-weight: bold;">View Raw Debug Data</summary>
+                            <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                        </details>
+                    `;
+
+                    resultsDiv.innerHTML = html;
+                } else {
+                    throw new Error(result.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Blog Debug Failed</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+                console.error('Blog Debug Error:', error);
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('status').innerHTML = '<p>Click "Test API" to check if the blog API is working...</p>';
+            document.getElementById('results').innerHTML = '';
+            currentBlogs = [];
+        }
+        
+        // Auto-test on page load
+        window.onload = function() {
+            testBlogListAPI();
+        };
+    </script>
+</body>
+</html>

@@ -13,6 +13,17 @@ import Newsletter from './Newsletter';
 import Footer from './Footer';
 import ProductPage from './ProductPage';
 import ContactPage from './ContactPage'; // Import the ContactPage component
+import WhyChooseUsPage from './pages/WhyChooseUsPage';
+import WhyChooseUsTest from './components/WhyChooseUsTest';
+import WhyChooseUsDemo from './components/WhyChooseUsDemo';
+import WhyChooseUs from './WhyChooseUs';
+import TestWhyChooseUs from './TestWhyChooseUs';
+import TestCounterSection from './TestCounterSection';
+import CounterShowcase from './CounterShowcase';
+import CounterSystemDocumentation from './CounterSystemDocumentation';
+import DynamicWhyChooseUsExample from './DynamicWhyChooseUsExample';
+import BlogDetailPage from './BlogDetailPage';
+import TestBlogSystem from './TestBlogSystem';
 
 function App() {
     return (
@@ -24,6 +35,7 @@ function App() {
                     <>
                         <Slider />
                         <AboutUs />
+                        <WhyChooseUs />
                         <CounterSection />
                         <ProductAutoSlider />
                         <BlogSection />
@@ -38,11 +50,31 @@ function App() {
 
                 {/* Blog Page */}
                 <Route path="/news" element={<BlogPage />} /> {/* <-- Fix here */}
+                {/* Blog Detail Page */}
+                <Route path="/blog/:id" element={<BlogDetailPage />} />
 
                 {/* Newsletter Page */}
                 <Route path="/newsletter" element={<Newsletter />} />
                 {/* Contact Page */}
                 <Route path="/Contact-Us" element={<ContactPage />} />
+                {/* Why Choose Us Page */}
+                <Route path="/why-choose-us" element={<WhyChooseUsPage />} />
+                {/* Why Choose Us Test Page */}
+                <Route path="/test-why-choose-us" element={<WhyChooseUsTest />} />
+                {/* Why Choose Us Demo Page */}
+                <Route path="/demo-why-choose-us" element={<WhyChooseUsDemo />} />
+                {/* Test Dynamic WhyChooseUs Component */}
+                <Route path="/test-dynamic-why-choose-us" element={<TestWhyChooseUs />} />
+                {/* Test Dynamic CounterSection Component */}
+                <Route path="/test-counter-section" element={<TestCounterSection />} />
+                {/* Counter Components Showcase */}
+                <Route path="/counter-showcase" element={<CounterShowcase />} />
+                {/* Counter System Documentation */}
+                <Route path="/counter-docs" element={<CounterSystemDocumentation />} />
+                {/* Dynamic WhyChooseUs Example */}
+                <Route path="/dynamic-why-choose-us-example" element={<DynamicWhyChooseUsExample />} />
+                {/* Test Blog System */}
+                <Route path="/test-blog-system" element={<TestBlogSystem />} />
             </Routes>
             <Footer />
         </BrowserRouter>

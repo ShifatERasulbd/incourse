@@ -24,6 +24,12 @@ import {
   Settings as SettingsIcon,
   AccountCircle,
   Logout,
+  ViewCarousel as SlidersIcon,
+  Info as AboutIcon,
+  Inventory as ProductsIcon,
+  Article as BlogsIcon,
+  CheckCircle as WhyChooseUsIcon,
+  Speed as CountersIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -56,6 +62,12 @@ const Layout = () => {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin' },
     { text: 'Users', icon: <PeopleIcon />, path: '/admin/users' },
+    { text: 'Products', icon: <ProductsIcon />, path: '/admin/products' },
+    { text: 'Blogs', icon: <BlogsIcon />, path: '/admin/blogs' },
+    { text: 'Why Choose Us', icon: <WhyChooseUsIcon />, path: '/admin/why-choose-us' },
+    { text: 'Counters', icon: <CountersIcon />, path: '/admin/counters' },
+    { text: 'Sliders', icon: <SlidersIcon />, path: '/admin/sliders' },
+    { text: 'About Us', icon: <AboutIcon />, path: '/admin/about-us' },
     { text: 'Settings', icon: <SettingsIcon />, path: '/admin/settings' },
   ];
 

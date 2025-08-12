@@ -8,6 +8,12 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Users from './pages/Users';
+import Products from './pages/Products';
+import Blogs from './pages/Blogs';
+import WhyChooseUs from './pages/WhyChooseUs';
+import Counters from './pages/Counters';
+import Sliders from './pages/Sliders';
+import AboutUsManagement from './pages/AboutUsManagement';
 import Settings from './pages/Settings';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -33,17 +39,21 @@ function AdminApp() {
         <AuthProvider>
           <Routes>
             <Route path="/admin/login" element={<Login />} />
-            <Route path="/admin/*" element={
+            <Route path="/admin" element={
               <ProtectedRoute>
-                <Layout>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/users" element={<Users />} />
-                    <Route path="/settings" element={<Settings />} />
-                  </Routes>
-                </Layout>
+                <Layout />
               </ProtectedRoute>
-            } />
+            }>
+              <Route index element={<Dashboard />} />
+              <Route path="users" element={<Users />} />
+              <Route path="products" element={<Products />} />
+              <Route path="blogs" element={<Blogs />} />
+              <Route path="why-choose-us" element={<WhyChooseUs />} />
+              <Route path="counters" element={<Counters />} />
+              <Route path="sliders" element={<Sliders />} />
+              <Route path="about-us" element={<AboutUsManagement />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
           </Routes>
         </AuthProvider>
       </ThemeProvider>

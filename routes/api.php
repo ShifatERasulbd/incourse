@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\WhyChooseUsController;
 use App\Http\Controllers\Api\CounterController;
+use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\FrontendController;
 
 /*
@@ -42,6 +43,7 @@ Route::get('/blogs/{id}', [FrontendController::class, 'getBlogDetails']);
 Route::get('/debug/blogs', [FrontendController::class, 'debugBlogs']);
 Route::get('/why-choose-us/active', [WhyChooseUsController::class, 'getActive']);
 Route::get('/counters/active', [CounterController::class, 'getActive']);
+Route::get('/contact', [FrontendController::class, 'getContact']);
 
 // Frontend data endpoints - Optimized for frontend consumption
 Route::prefix('frontend')->group(function () {
@@ -56,6 +58,7 @@ Route::prefix('frontend')->group(function () {
     Route::get('/debug/blogs', [FrontendController::class, 'debugBlogs']);
     Route::get('/why-choose-us', [FrontendController::class, 'getWhyChooseUs']);
     Route::get('/counters', [FrontendController::class, 'getCounters']);
+    Route::get('/contact', [FrontendController::class, 'getContact']);
 });
 
 // Admin dashboard routes
@@ -87,4 +90,8 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     // Counter management routes
     Route::apiResource('counters', CounterController::class);
     Route::post('/counters/update-order', [CounterController::class, 'updateOrder']);
+
+    // Contact management routes
+    Route::apiResource('contacts', ContactController::class);
+    Route::post('/contacts/{contact}/toggle-active', [ContactController::class, 'toggleActive']);
 });

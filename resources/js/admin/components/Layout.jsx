@@ -30,6 +30,7 @@ import {
   Article as BlogsIcon,
   CheckCircle as WhyChooseUsIcon,
   Speed as CountersIcon,
+  ContactMail as ContactIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -68,6 +69,7 @@ const Layout = () => {
     { text: 'Counters', icon: <CountersIcon />, path: '/admin/counters' },
     { text: 'Sliders', icon: <SlidersIcon />, path: '/admin/sliders' },
     { text: 'About Us', icon: <AboutIcon />, path: '/admin/about-us' },
+    { text: 'Contact Info', icon: <ContactIcon />, path: '/admin/contacts' },
     { text: 'Settings', icon: <SettingsIcon />, path: '/admin/settings' },
   ];
 

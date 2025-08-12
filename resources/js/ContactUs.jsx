@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
@@ -9,6 +9,49 @@ export default function ContactUs() {
   });
 
   const [status, setStatus] = useState('');
+  const [contactInfo, setContactInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchContactInfo();
+  }, []);
+
+  const fetchContactInfo = async () => {
+    try {
+      const response = await fetch('/api/contact');
+      const result = await response.json();
+
+      if (result.success) {
+        setContactInfo(result.data);
+      } else {
+        console.error('Failed to fetch contact info:', result.message);
+        // Set default contact info if API fails
+        setContactInfo({
+          title: 'Get in Touch',
+          description: 'Feel free to reach out with any questions or requests. We\'re here to help!',
+          address: '123 Power St, Energy City, Country',
+          phone: '+880 1234 567890',
+          email: 'support@incourses.com',
+          working_hours: 'Mon - Fri, 9am - 6pm',
+          banner_image: 'Frontend/slider/slider2.jpg'
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching contact info:', error);
+      // Set default contact info if API fails
+      setContactInfo({
+        title: 'Get in Touch',
+        description: 'Feel free to reach out with any questions or requests. We\'re here to help!',
+        address: '123 Power St, Energy City, Country',
+        phone: '+880 1234 567890',
+        email: 'support@incourses.com',
+        working_hours: 'Mon - Fri, 9am - 6pm',
+        banner_image: 'Frontend/slider/slider2.jpg'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -33,14 +76,61 @@ export default function ContactUs() {
     }, 1500);
   };
 
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '400px',
+        fontSize: '1.2rem',
+        color: '#666'
+      }}>
+        Loading contact information...
+      </div>
+    );
+  }
+
+  if (!contactInfo) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '400px',
+        fontSize: '1.2rem',
+        color: '#666'
+      }}>
+        Contact information not available.
+      </div>
+    );
+  }
+
+  const getBannerImage = () => {
+    if (contactInfo.banner_image) {
+      // Check if it's a full URL or a relative path
+      if (contactInfo.banner_image.startsWith('http')) {
+        return contactInfo.banner_image;
+      } else if (contactInfo.banner_image.startsWith('storage/')) {
+        return `/${contactInfo.banner_image}`;
+      } else {
+        return `/${contactInfo.banner_image}`;
+      }
+    }
+    return '/Frontend/slider/slider2.jpg'; // fallback
+  };
+
   return (
     <>
       {/* Full width top image outside max-width container */}
       <div style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', overflow: 'hidden', borderRadius: '0 0 12px 12px' }}>
         <img
-          src="/Frontend/slider/slider2.jpg"
+          src={getBannerImage()}
           alt="Contact Us Banner"
           style={{ width: '100%', height: '300px', objectFit: 'cover', display: 'block' }}
+          onError={(e) => {
+            e.target.src = '/Frontend/slider/slider2.jpg'; // fallback image
+          }}
         />
       </div>
 
@@ -68,12 +158,125 @@ export default function ContactUs() {
             borderRight: '2px solid #ddd',
             minWidth: '280px',
           }}>
-            <h2 style={{ marginBottom: '1rem' }}>Get in Touch</h2>
-            <p><strong>Address:</strong> 123 Power St, Energy City, Country</p>
-            <p><strong>Phone:</strong> +880 1234 567890</p>
-            <p><strong>Email:</strong> support@incourses.com</p>
-            <p><strong>Working Hours:</strong> Mon - Fri, 9am - 6pm</p>
-            <p>Feel free to reach out with any questions or requests. We're here to help!</p>
+            <h2 style={{ marginBottom: '1rem' }}>{contactInfo.title}</h2>
+            <p><strong>Address:</strong> {contactInfo.address}</p>
+            <p><strong>Phone:</strong> {contactInfo.phone}</p>
+            <p><strong>Email:</strong> {contactInfo.email}</p>
+            <p><strong>Working Hours:</strong> {contactInfo.working_hours}</p>
+            {contactInfo.description && <p>{contactInfo.description}</p>}
+
+            {/* Social Media Links */}
+            {(contactInfo.facebook_url || contactInfo.twitter_url || contactInfo.linkedin_url || contactInfo.instagram_url) && (
+              <div style={{ marginTop: '1.5rem' }}>
+                <h3 style={{ marginBottom: '0.5rem', fontSize: '1rem' }}>Follow Us:</h3>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  {contactInfo.facebook_url && (
+                    <a
+                      href={contactInfo.facebook_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: '#1877f2',
+                        textDecoration: 'none',
+                        padding: '0.5rem',
+                        border: '1px solid #1877f2',
+                        borderRadius: '5px',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.3s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#1877f2';
+                        e.target.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.color = '#1877f2';
+                      }}
+                    >
+                      Facebook
+                    </a>
+                  )}
+                  {contactInfo.twitter_url && (
+                    <a
+                      href={contactInfo.twitter_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: '#1da1f2',
+                        textDecoration: 'none',
+                        padding: '0.5rem',
+                        border: '1px solid #1da1f2',
+                        borderRadius: '5px',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.3s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#1da1f2';
+                        e.target.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.color = '#1da1f2';
+                      }}
+                    >
+                      Twitter
+                    </a>
+                  )}
+                  {contactInfo.linkedin_url && (
+                    <a
+                      href={contactInfo.linkedin_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: '#0077b5',
+                        textDecoration: 'none',
+                        padding: '0.5rem',
+                        border: '1px solid #0077b5',
+                        borderRadius: '5px',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.3s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#0077b5';
+                        e.target.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.color = '#0077b5';
+                      }}
+                    >
+                      LinkedIn
+                    </a>
+                  )}
+                  {contactInfo.instagram_url && (
+                    <a
+                      href={contactInfo.instagram_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: '#e4405f',
+                        textDecoration: 'none',
+                        padding: '0.5rem',
+                        border: '1px solid #e4405f',
+                        borderRadius: '5px',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.3s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#e4405f';
+                        e.target.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent';
+                        e.target.style.color = '#e4405f';
+                      }}
+                    >
+                      Instagram
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right column - Contact Form */}
@@ -138,6 +341,46 @@ export default function ContactUs() {
             {status && <p style={{ marginTop: '1rem', color: '#444', fontWeight: '600' }}>{status}</p>}
           </div>
         </div>
+
+        {/* Map Section */}
+        {contactInfo.map_url && (
+          <div style={{
+            marginTop: '3rem',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.08)'
+          }}>
+            <h2 style={{
+              color: '#272863',
+              marginBottom: '1rem',
+              textAlign: 'center'
+            }}>
+              Find Us Here
+            </h2>
+            <div style={{
+              position: 'relative',
+              paddingBottom: '56.25%', // 16:9 aspect ratio
+              height: 0,
+              overflow: 'hidden'
+            }}>
+              <iframe
+                src={contactInfo.map_url}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 0
+                }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Location Map"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -14,6 +14,7 @@ import WhyChooseUs from './pages/WhyChooseUs';
 import Counters from './pages/Counters';
 import Sliders from './pages/Sliders';
 import AboutUsManagement from './pages/AboutUsManagement';
+import Contacts from './pages/Contacts';
 import Settings from './pages/Settings';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -52,6 +53,7 @@ function AdminApp() {
               <Route path="counters" element={<Counters />} />
               <Route path="sliders" element={<Sliders />} />
               <Route path="about-us" element={<AboutUsManagement />} />
+              <Route path="contacts" element={<Contacts />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>

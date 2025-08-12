@@ -66,7 +66,7 @@ const BlogDetailPage = () => {
   };
 
   const handleBackToBlogs = () => {
-    navigate('/blogs');
+    navigate('/news');
   };
 
   if (loading) {
@@ -136,7 +136,7 @@ const BlogDetailPage = () => {
               fontSize: '1rem'
             }}
           >
-            Back to Blogs
+            Back to News
           </button>
         </div>
       </div>

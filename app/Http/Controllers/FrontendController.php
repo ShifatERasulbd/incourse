@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Blog;
 use App\Models\WhyChooseUs;
 use App\Models\Counter;
+use App\Models\Contact;
 
 class FrontendController extends Controller
 {
@@ -318,6 +319,34 @@ class FrontendController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error fetching debug info',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get contact information
+     */
+    public function getContact(): JsonResponse
+    {
+        try {
+            $contact = Contact::getActive();
+
+            if (!$contact) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No active contact information found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $contact
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching contact information',
                 'error' => $e->getMessage()
             ], 500);
         }

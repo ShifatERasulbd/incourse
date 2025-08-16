@@ -1,6 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function Footer() {
+ const [socialLinks, setSocialLinks] = useState({
+  facebook: '',
+  twitter: '',
+  linkedin: '',
+  instagram: '',
+ })
+ useEffect(() => {
+  const fetchSocialLinks = async () => {
+   try {
+    const response = await axios.get('/api/frontend/admin/settings/public');
+    if (response.data.success) {
+     const settings = response.data.data;
+     setSocialLinks({
+      facebook: settings.find(s => s.key === 'facebook_url')?.value || '',
+      twitter: settings.find(s => s.key === 'twitter_url')?.value || '',
+      linkedin: settings.find(s => s.key === 'linkedin_url')?.value || '',
+      instagram: settings.find(s => s.key === 'instagram_url')?.value || '',
+     });
+    }
+   } catch (error) {
+    console.error('Failed to fetch social links:', error);
+   }
+  };
+
+  fetchSocialLinks(setSocialLinks);
+ }, []);  
   return (
     <footer style={styles.footer}>
       <style>{`
@@ -23,9 +50,9 @@ export default function Footer() {
           <h4 style={styles.heading}>Company</h4>
           <ul style={styles.list}>
             <li><a href="/about" style={styles.link}>About Us</a></li>
-            <li><a href="/careers" style={styles.link}>Careers</a></li>
-            <li><a href="/blog" style={styles.link}>Blog</a></li>
-            <li><a href="/contact" style={styles.link}>Contact</a></li>
+            <li><a href="/#!" style={styles.link}>Careers</a></li>
+            <li><a href="/news" style={styles.link}>News</a></li>
+            <li><a href="/Contact-Us" style={styles.link}>Contact</a></li>
           </ul>
         </div>
 
@@ -33,10 +60,10 @@ export default function Footer() {
   <div className="footer-column" style={styles.column}>
           <h4 style={styles.heading}>Support</h4>
           <ul style={styles.list}>
-            <li><a href="/help-center" style={styles.link}>Help Center</a></li>
-            <li><a href="/faq" style={styles.link}>FAQ</a></li>
-            <li><a href="/terms" style={styles.link}>Terms of Service</a></li>
-            <li><a href="/privacy" style={styles.link}>Privacy Policy</a></li>
+            <li><a href="#!" style={styles.link}>Help Center</a></li>
+            <li><a href="#!" style={styles.link}>FAQ</a></li>
+            <li><a href="#!" style={styles.link}>Terms of Service</a></li>
+            <li><a href="#!" style={styles.link}>Privacy Policy</a></li>
           </ul>
         </div>
 
@@ -44,10 +71,34 @@ export default function Footer() {
   <div className="footer-column" style={styles.column}>
           <h4 style={styles.heading}>Follow Us</h4>
           <ul style={styles.list}>
-            <li><a href="https://facebook.com" style={styles.link} target="_blank" rel="noreferrer">Facebook</a></li>
-            <li><a href="https://twitter.com" style={styles.link} target="_blank" rel="noreferrer">Twitter</a></li>
-            <li><a href="https://instagram.com" style={styles.link} target="_blank" rel="noreferrer">Instagram</a></li>
-            <li><a href="https://linkedin.com" style={styles.link} target="_blank" rel="noreferrer">LinkedIn</a></li>
+            {socialLinks.facebook && (
+              <li>
+                <a href={socialLinks.facebook} style={styles.link} target="_blank" rel="noreferrer">
+                  Facebook
+                </a>
+              </li>
+            )}
+           {socialLinks.twitter && (
+            <li>
+              <a href={socialLinks.twitter} style={styles.link} target="_blank" rel="noreferrer">
+                Twitter
+              </a>
+            </li>
+          )}
+            {socialLinks.instagram && (
+                <li>
+                  <a href={socialLinks.instagram} style={styles.link} target="_blank" rel="noreferrer">
+                    Instagram
+                  </a>
+                </li>
+              )}
+                        {socialLinks.linkedin && (
+              <li>
+                <a href={socialLinks.linkedin} style={styles.link} target="_blank" rel="noreferrer">
+                  LinkedIn
+                </a>
+              </li>
+            )}
           </ul>
         </div>
       </div>

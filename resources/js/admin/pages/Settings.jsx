@@ -107,28 +107,19 @@ export default function Settings() {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-     
-
-      // Use the settings service (with built-in fallback)
       const response = await settingService.getAllSettings();
-
+      
       if (response && response.success && Array.isArray(response.data)) {
         setSettings(response.data);
-        setSnackbar({
-          open: true,
-          message: response.message || 'Settings loaded successfully!',
-          severity: 'success'
-        });
       } else {
         setSnackbar({
           open: true,
-          message: response?.message || 'Failed to fetch settings - Invalid response format',
+          message: response?.message || 'Failed to fetch settings',
           severity: 'error'
         });
       }
     } catch (error) {
       console.error('Error fetching settings:', error);
-      console.error('Error details:', error.response?.data);
       setSnackbar({
         open: true,
         message: `Error fetching settings: ${error.message}`,

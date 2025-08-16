@@ -109,7 +109,7 @@ export const createSetting = async (settingData) => {
 export const updateSetting = async (id, settingData) => {
   try {
     await ensureCsrf();
-    const response = await apiClient.put(`/admin/settings/${id}`, settingData);
+    const response = await apiClient.put(`/frontend/settings/${id}`, settingData);
     return response.data;
   } catch (error) {
     return {

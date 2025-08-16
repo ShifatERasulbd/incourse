@@ -27,8 +27,8 @@ export default function ContactUs() {
           address: settings.find(s => s.key === 'contact_address')?.value || '',
           phone: settings.find(s => s.key === 'contact_phone')?.value || '',
           email: settings.find(s => s.key === 'contact_email')?.value || '',
-          map: settings.find(s => s.key === 'contact_map')?.value || '',
-          workingHours: settings.find(s => s.key === 'contact_working_hours')?.value || ''
+        
+          workingHours: settings.find(s => s.key === 'contact_working_hours')?.value || 'Comming soon'
         };
         
         setContactInfo(contactData);

@@ -65,6 +65,9 @@ Route::prefix('frontend')->group(function () {
 
     // Public settings endpoint (for admin panel without auth)
     Route::get('/admin/settings/public', [App\Http\Controllers\Admin\SettingController::class, 'publicIndex']);
+       // Settings management routes
+    Route::apiResource('settings', SettingController::class);
+    Route::post('/settings/{setting}/toggle-active', [SettingController::class, 'toggleActive']);
 });
 
 // Admin dashboard routes
@@ -101,7 +104,5 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::apiResource('contacts', ContactController::class);
     Route::post('/contacts/{contact}/toggle-active', [ContactController::class, 'toggleActive']);
 
-    // Settings management routes
-    Route::apiResource('settings', SettingController::class);
-    Route::post('/settings/{setting}/toggle-active', [SettingController::class, 'toggleActive']);
+ 
 });

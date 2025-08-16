@@ -1,26 +1,38 @@
-import React, { useState, useRef, useEffect } from 'react';
 
-const products = [
-  { image: '/Frontend/slider/slider1.jpg', name: 'Power Generator', desc: 'High-efficiency generator for industrial use.' },
-  { image: '/Frontend/slider/slider2.jpg', name: 'Solar Panel', desc: 'Eco-friendly solar panel for homes and businesses.' },
-  { image: '/Frontend/slider/slider3.jpg', name: 'UPS System', desc: 'Reliable UPS for uninterrupted power supply.' },
-  { image: '/Frontend/slider/slider1.jpg', name: 'Battery Pack', desc: 'Long-lasting battery pack for backup.' },
-  { image: '/Frontend/slider/slider2.jpg', name: 'Smart Inverter', desc: 'Efficient inverter for smart energy management.' },
-  { image: '/Frontend/slider/slider3.jpg', name: 'Voltage Stabilizer', desc: 'Protect your devices from voltage fluctuations.' },
-  { image: '/Frontend/slider/slider1.jpg', name: 'Energy Meter', desc: 'Accurate energy consumption monitoring.' },
-  { image: '/Frontend/slider/slider2.jpg', name: 'Wind Turbine', desc: 'Harness wind energy for your needs.' },
-  { image: '/Frontend/slider/slider3.jpg', name: 'Portable Charger', desc: 'Charge devices on the go.' },
-  { image: '/Frontend/slider/slider1.jpg', name: 'LED Lighting', desc: 'Bright and energy-saving LED lights.' },
-  { image: '/Frontend/slider/slider2.jpg', name: 'Surge Protector', desc: 'Keep electronics safe from surges.' },
-  { image: '/Frontend/slider/slider3.jpg', name: 'Electric Scooter', desc: 'Eco-friendly urban mobility.' }
-];
+import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 
 export default function ProductAutoSlider() {
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const sliderRef = useRef(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
   const scrollSpeed = 0.5;
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('/api/frontend/products');
+        // The API returns paginated data: { success: true, data: { data: [products], ...pagination } }
+        if (response.data.success && Array.isArray(response.data.data.data)) {
+          setProducts(response.data.data.data);
+        } else {
+          setError('API returned invalid products data');
+        }
+      } catch (error) {
+        setError('Failed to fetch products');
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     const slider = sliderRef.current;
@@ -187,14 +199,19 @@ export default function ProductAutoSlider() {
           onTouchEnd={onTouchEnd}
           onTouchMove={onTouchMove}
         >
-          {products.map((product, idx) => (
+          {loading && <div style={{ color: '#fff', padding: '2rem' }}>Loading products...</div>}
+          {error && <div style={{ color: 'red', padding: '2rem' }}>{error}</div>}
+          {!loading && !error && products.length === 0 && (
+            <div style={{ color: '#fff', padding: '2rem' }}>No products found.</div>
+          )}
+          {!loading && !error && products.map((product, idx) => (
             <div key={idx} className="product-card">
               <img
-                src={product.image}
+                src={product.image_path}
                 alt={product.name}
               />
               <h3 style={{ fontSize: '1.1rem', color: '#272863', margin: '0.5rem 0' }}>{product.name}</h3>
-              <p style={{ fontSize: '0.95rem', color: '#444', margin: '0 0 1rem 0' }}>{product.desc}</p>
+              <p style={{ fontSize: '0.95rem', color: '#444', margin: '0 0 1rem 0' }}>{product.short_description || product.description}</p>
               <button
                 className="view-details-btn"
                 onClick={() => alert(`Viewing details for ${product.name}`)}

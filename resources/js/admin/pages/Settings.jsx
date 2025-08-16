@@ -107,7 +107,7 @@ export default function Settings() {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-      console.log('Fetching settings...');
+     
 
       // Use the settings service (with built-in fallback)
       const response = await settingService.getAllSettings();

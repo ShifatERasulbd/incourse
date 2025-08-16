@@ -1,79 +1,59 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function ContactUs() {
+
+    const [contactInfo, setContactInfo] = useState({
+      address: '',
+      phone: '',
+      email: '',
+      map: '',
+      workingHours: ''
+    });
+  useEffect(() => {
+    fetchContactInfo();
+  }, []);
+
+  const fetchContactInfo = async () => {
+    try{
+      setLoading(true);
+      // Fetch all settings from the public endpoint
+      const response = await axios.get('/api/frontend/admin/settings/public');
+       if (response.data.success) {
+        const settings = response.data.data;
+        
+        // Extract contact information
+        const contactData = {
+          address: settings.find(s => s.key === 'contact_address')?.value || '',
+          phone: settings.find(s => s.key === 'contact_phone')?.value || '',
+          email: settings.find(s => s.key === 'contact_email')?.value || '',
+          map: settings.find(s => s.key === 'contact_map')?.value || '',
+          workingHours: settings.find(s => s.key === 'contact_working_hours')?.value || ''
+        };
+        
+        setContactInfo(contactData);
+      }
+    }catch (error) {
+      console.error('Error fetching contact information:', error);
+      setStatus('error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
     message: '',
   });
-
+  const [settings, setSettings] = useState([]);
   const [status, setStatus] = useState('');
-  const [contactInfo, setContactInfo] = useState(null);
+
+  
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchContactInfo();
-  }, []);
 
-  const fetchContactInfo = async () => {
-    try {
-      setLoading(true);
-      console.log('Fetching contact info from /api/contact...');
-
-      const response = await fetch('/api/contact', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('API Response:', result);
-
-      if (result.success && result.data) {
-        console.log('Setting contact info:', result.data);
-        setContactInfo(result.data);
-        setStatus('success');
-      } else {
-        console.error('API returned unsuccessful response:', result);
-        setStatus('error');
-        // Set default contact info if API fails
-        setContactInfo({
-          title: 'Get in Touch',
-          description: 'Feel free to reach out with any questions or requests. We\'re here to help!',
-          address: '123 Power St, Energy City, Country',
-          phone: '+880 1234 567890',
-          email: 'support@incourses.com',
-          working_hours: 'Mon - Fri, 9am - 6pm',
-          banner_image: 'Frontend/slider/slider2.jpg'
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching contact info:', error);
-      setStatus('error');
-      // Set default contact info if API fails
-      setContactInfo({
-        title: 'Get in Touch',
-        description: 'Feel free to reach out with any questions or requests. We\'re here to help!',
-        address: '123 Power St, Energy City, Country',
-        phone: '+880 1234 567890',
-        email: 'support@incourses.com',
-        working_hours: 'Mon - Fri, 9am - 6pm',
-        banner_image: 'Frontend/slider/slider2.jpg'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleChange = (e) => {
     setFormData(prev => ({

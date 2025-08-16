@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incourses</title>
+    <title>Incorese</title>
     @vite('resources/js/react-entry.jsx')
 </head>
 <body>

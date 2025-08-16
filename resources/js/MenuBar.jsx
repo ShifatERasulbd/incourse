@@ -1,23 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
+import frontendService from "./services/frontendService";
+
 
 export default function Navbar() {
   const [openSubmenuIndex, setOpenSubmenuIndex] = useState(null);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await frontendService.getCategories();
+      if (res.success && Array.isArray(res.data)) {
+        setCategories(res.data.map(cat => cat.name));
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const menuItems = [
     { label: "Home", path: "/" },
     { label: "About", path: "/about" },
     {
-      label: "Products",
-      submenu: [
-        "Electronics",
-        "Clothing",
-        "Books",
-        "Sports",
-        "Furniture",
-        "Shoes",
-        "Accessories",
-      ],
+      label: "Products",path:"/products",
+      submenu: categories,
     },
     { label: "Contact", path: "/contact" },
   ];

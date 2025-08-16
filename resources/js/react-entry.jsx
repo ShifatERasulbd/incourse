@@ -23,6 +23,7 @@ import CounterShowcase from './CounterShowcase';
 import CounterSystemDocumentation from './CounterSystemDocumentation';
 import DynamicWhyChooseUsExample from './DynamicWhyChooseUsExample';
 import BlogDetailPage from './BlogDetailPage';
+import ProductDetailPage from './ProductDetailPage';
 import TestBlogSystem from './TestBlogSystem';
 
 function App() {
@@ -47,6 +48,8 @@ function App() {
 
                 {/* Products Page */}
                 <Route path="/products" element={<ProductPage />} />
+                {/* Product Detail Page */}
+                <Route path="/products/:id" element={<ProductDetailPage />} />
 
                 {/* Blog Page */}
                 <Route path="/news" element={<BlogPage />} /> {/* <-- Fix here */}

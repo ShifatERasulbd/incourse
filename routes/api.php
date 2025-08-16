@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\WhyChooseUsController;
 use App\Http\Controllers\Api\CounterController;
 use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\FrontendController;
 
 /*
@@ -37,6 +38,7 @@ Route::get('/auth/user', [AuthController::class, 'user'])->middleware('auth:sanc
 Route::get('/sliders/active', [SliderController::class, 'active']);
 Route::get('/about-us/active', [AboutUsController::class, 'getActive']);
 Route::get('/products/active', [ProductController::class, 'getActive']);
+Route::get('/products/{id}', [FrontendController::class, 'getProductDetails']);
 Route::get('/categories/active', [CategoryController::class, 'getActive']);
 Route::get('/blogs/published', [BlogController::class, 'getPublished']);
 Route::get('/blogs/{id}', [FrontendController::class, 'getBlogDetails']);
@@ -52,6 +54,7 @@ Route::prefix('frontend')->group(function () {
     Route::get('/sliders', [FrontendController::class, 'getSliders']);
     Route::get('/about-us', [FrontendController::class, 'getAboutUs']);
     Route::get('/products', [FrontendController::class, 'getProducts']);
+    Route::get('/products/{id}', [FrontendController::class, 'getProductDetails']);
     Route::get('/categories', [FrontendController::class, 'getCategories']);
     Route::get('/blogs', [FrontendController::class, 'getBlogs']);
     Route::get('/blogs/{id}', [FrontendController::class, 'getBlogDetails']);
@@ -59,6 +62,9 @@ Route::prefix('frontend')->group(function () {
     Route::get('/why-choose-us', [FrontendController::class, 'getWhyChooseUs']);
     Route::get('/counters', [FrontendController::class, 'getCounters']);
     Route::get('/contact', [FrontendController::class, 'getContact']);
+
+    // Public settings endpoint (for admin panel without auth)
+    Route::get('/admin/settings/public', [App\Http\Controllers\Admin\SettingController::class, 'publicIndex']);
 });
 
 // Admin dashboard routes
@@ -94,4 +100,8 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     // Contact management routes
     Route::apiResource('contacts', ContactController::class);
     Route::post('/contacts/{contact}/toggle-active', [ContactController::class, 'toggleActive']);
+
+    // Settings management routes
+    Route::apiResource('settings', SettingController::class);
+    Route::post('/settings/{setting}/toggle-active', [SettingController::class, 'toggleActive']);
 });

@@ -18,13 +18,34 @@ export default function ContactUs() {
 
   const fetchContactInfo = async () => {
     try {
-      const response = await fetch('/api/contact');
-      const result = await response.json();
+      setLoading(true);
+      console.log('Fetching contact info from /api/contact...');
 
-      if (result.success) {
+      const response = await fetch('/api/contact', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('API Response:', result);
+
+      if (result.success && result.data) {
+        console.log('Setting contact info:', result.data);
         setContactInfo(result.data);
+        setStatus('success');
       } else {
-        console.error('Failed to fetch contact info:', result.message);
+        console.error('API returned unsuccessful response:', result);
+        setStatus('error');
         // Set default contact info if API fails
         setContactInfo({
           title: 'Get in Touch',
@@ -38,6 +59,7 @@ export default function ContactUs() {
       }
     } catch (error) {
       console.error('Error fetching contact info:', error);
+      setStatus('error');
       // Set default contact info if API fails
       setContactInfo({
         title: 'Get in Touch',
@@ -80,13 +102,18 @@ export default function ContactUs() {
     return (
       <div style={{
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '400px',
         fontSize: '1.2rem',
-        color: '#666'
+        color: '#666',
+        textAlign: 'center'
       }}>
-        Loading contact information...
+        <div style={{ marginBottom: '1rem' }}>Loading contact information...</div>
+        <div style={{ fontSize: '0.9rem', color: '#999' }}>
+          Fetching data from /api/contact
+        </div>
       </div>
     );
   }
@@ -95,13 +122,34 @@ export default function ContactUs() {
     return (
       <div style={{
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '400px',
         fontSize: '1.2rem',
-        color: '#666'
+        color: '#666',
+        textAlign: 'center'
       }}>
-        Contact information not available.
+        <div style={{ marginBottom: '1rem', color: '#c41c13' }}>
+          Contact information not available.
+        </div>
+        <div style={{ fontSize: '0.9rem', color: '#999' }}>
+          Status: {status} | Check console for details
+        </div>
+        <button
+          onClick={fetchContactInfo}
+          style={{
+            marginTop: '1rem',
+            padding: '0.5rem 1rem',
+            backgroundColor: '#c41c13',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          Retry Loading
+        </button>
       </div>
     );
   }
@@ -122,6 +170,34 @@ export default function ContactUs() {
 
   return (
     <>
+      {/* Debug Panel - Remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{
+          position: 'fixed',
+          top: '10px',
+          right: '10px',
+          backgroundColor: '#f8f9fa',
+          border: '1px solid #ddd',
+          borderRadius: '5px',
+          padding: '10px',
+          fontSize: '12px',
+          zIndex: 9999,
+          maxWidth: '300px'
+        }}>
+          <strong>Contact Debug Info:</strong><br/>
+          Status: {status}<br/>
+          Loading: {loading ? 'Yes' : 'No'}<br/>
+          Contact Info: {contactInfo ? 'Loaded' : 'Not loaded'}<br/>
+          {contactInfo && (
+            <>
+              Title: {contactInfo.title}<br/>
+              Email: {contactInfo.email}<br/>
+              Active: {contactInfo.is_active ? 'Yes' : 'No'}
+            </>
+          )}
+        </div>
+      )}
+
       {/* Full width top image outside max-width container */}
       <div style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', overflow: 'hidden', borderRadius: '0 0 12px 12px' }}>
         <img
@@ -163,7 +239,16 @@ export default function ContactUs() {
             <p><strong>Phone:</strong> {contactInfo.phone}</p>
             <p><strong>Email:</strong> {contactInfo.email}</p>
             <p><strong>Working Hours:</strong> {contactInfo.working_hours}</p>
-            {contactInfo.description && <p>{contactInfo.description}</p>}
+            {contactInfo.description && (
+              <div
+                style={{
+                  marginTop: '1rem',
+                  lineHeight: '1.6',
+                  color: '#555'
+                }}
+                dangerouslySetInnerHTML={{ __html: contactInfo.description }}
+              />
+            )}
 
             {/* Social Media Links */}
             {(contactInfo.facebook_url || contactInfo.twitter_url || contactInfo.linkedin_url || contactInfo.instagram_url) && (

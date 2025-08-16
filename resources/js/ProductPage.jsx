@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import frontendService from "./services/frontendService";
 import "./ProductPage.css";
 
@@ -17,6 +18,7 @@ const defaultProducts = [
 const defaultCategories = ["All", "Generators", "Solar", "UPS", "Batteries", "Inverters"];
 
 export default function ProductPage() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [products, setProducts] = useState(defaultProducts);
   const [categories, setCategories] = useState(defaultCategories);
@@ -85,7 +87,12 @@ export default function ProductPage() {
             <h3>{p.name}</h3>
             <p>{p.short_description || p.description}</p>
             {p.price && <div className="price">${p.price}</div>}
-            <button className="view-btn">View Details</button>
+            <button
+              className="view-btn"
+              onClick={() => navigate(`/products/${p.id}`)}
+            >
+              View Details
+            </button>
           </div>
         ))}
       </section>

@@ -7,6 +7,15 @@ Route::get('/', function () {
     return view('react');
 });
 
+// Public Settings API Routes (NO AUTHENTICATION REQUIRED)
+Route::prefix('api/public')->group(function () {
+    Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'publicIndex']);
+    Route::post('/settings', [App\Http\Controllers\Admin\SettingController::class, 'publicStore']);
+    Route::put('/settings/{setting}', [App\Http\Controllers\Admin\SettingController::class, 'publicUpdate']);
+    Route::delete('/settings/{setting}', [App\Http\Controllers\Admin\SettingController::class, 'publicDestroy']);
+    Route::post('/settings/{setting}/toggle', [App\Http\Controllers\Admin\SettingController::class, 'publicToggle']);
+});
+
 // Admin panel routes
 Route::prefix('admin')->group(function () {
     Route::get('/login', function () {

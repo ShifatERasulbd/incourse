@@ -351,4 +351,43 @@ class FrontendController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get single product details
+     */
+    public function getProductDetails($id): JsonResponse
+    {
+        try {
+            // First, let's try to find the product regardless of active status for debugging
+            $product = Product::with('category')->find($id);
+
+            if (!$product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found',
+                    'error' => "No product found with ID: {$id}"
+                ], 404);
+            }
+
+            // Check if product is active
+            if (!$product->is_active) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not available',
+                    'error' => "Product with ID {$id} exists but is not active. Active status: " . ($product->is_active ? 'true' : 'false')
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $product
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching product',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

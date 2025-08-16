@@ -24,6 +24,8 @@ import {
   Grid,
   Avatar,
 } from '@mui/material';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -264,14 +266,32 @@ const Contacts = () => {
       </TableContainer>
 
       {/* Contact Form Dialog */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{
+          sx: {
+            minHeight: '80vh',
+            maxHeight: '90vh'
+          }
+        }}
+      >
         <form onSubmit={handleSubmit}>
           <DialogTitle>
             {editingContact ? 'Edit Contact' : 'Add New Contact'}
           </DialogTitle>
-          <DialogContent>
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid item xs={12} sm={6}>
+          <DialogContent sx={{ minHeight: '600px' }}>
+            <Grid container spacing={3} sx={{ mt: 1 }}>
+              {/* Basic Information Section */}
+              <Grid item xs={12}>
+                <Typography variant="h6" sx={{ mb: 2, color: '#c41c13' }}>
+                  Basic Information
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
                 <TextField
                   name="title"
                   label="Title"
@@ -281,7 +301,7 @@ const Contacts = () => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   name="email"
                   label="Email"
@@ -292,7 +312,7 @@ const Contacts = () => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   name="phone"
                   label="Phone"
@@ -302,7 +322,7 @@ const Contacts = () => {
                   required
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   name="working_hours"
                   label="Working Hours"
@@ -324,18 +344,60 @@ const Contacts = () => {
                   rows={2}
                 />
               </Grid>
+
+              {/* Description Section - Full Width */}
               <Grid item xs={12}>
-                <TextField
-                  name="description"
-                  label="Description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  fullWidth
-                  multiline
-                  rows={3}
-                />
+                <Typography variant="h6" sx={{ mb: 2, mt: 2, color: '#c41c13' }}>
+                  Description
+                </Typography>
               </Grid>
               <Grid item xs={12}>
+                <Box sx={{
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  '& .ql-container': {
+                    minHeight: '200px',
+                    fontSize: '14px'
+                  },
+                  '& .ql-toolbar': {
+                    borderBottom: '1px solid #ddd'
+                  }
+                }}>
+                  <ReactQuill
+                    theme="snow"
+                    value={formData.description}
+                    onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
+                    style={{
+                      height: '200px',
+                      marginBottom: '42px'
+                    }}
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['link'],
+                        ['clean']
+                      ],
+                    }}
+                    formats={[
+                      'header', 'bold', 'italic', 'underline', 'strike',
+                      'list', 'bullet', 'color', 'background', 'link'
+                    ]}
+                    placeholder="Enter a detailed description of your contact information..."
+                  />
+                </Box>
+              </Grid>
+
+              {/* Media Section */}
+              <Grid item xs={12}>
+                <Typography variant="h6" sx={{ mb: 2, mt: 3, color: '#c41c13' }}>
+                  Media & Links
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
                 <input
                   accept="image/*"
                   style={{ display: 'none' }}
@@ -345,72 +407,131 @@ const Contacts = () => {
                   onChange={handleInputChange}
                 />
                 <label htmlFor="banner-image-upload">
-                  <Button variant="outlined" component="span" fullWidth>
-                    Upload Banner Image
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    fullWidth
+                    sx={{
+                      height: '56px',
+                      borderColor: '#c41c13',
+                      color: '#c41c13',
+                      '&:hover': {
+                        borderColor: '#a01610',
+                        backgroundColor: 'rgba(196, 28, 19, 0.04)'
+                      }
+                    }}
+                  >
+                    📷 Upload Banner Image
                   </Button>
                 </label>
                 {formData.banner_image && (
-                  <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                    Selected: {formData.banner_image.name}
+                  <Typography variant="caption" display="block" sx={{ mt: 1, color: 'green' }}>
+                    ✅ Selected: {formData.banner_image.name}
                   </Typography>
                 )}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   name="map_url"
-                  label="Map URL"
+                  label="Google Maps Embed URL"
                   value={formData.map_url}
                   onChange={handleInputChange}
                   fullWidth
+                  placeholder="https://maps.google.com/embed?pb=..."
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+
+              {/* Social Media Section */}
+              <Grid item xs={12}>
+                <Typography variant="h6" sx={{ mb: 2, mt: 2, color: '#c41c13' }}>
+                  Social Media Links
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
                 <TextField
                   name="facebook_url"
                   label="Facebook URL"
                   value={formData.facebook_url}
                   onChange={handleInputChange}
                   fullWidth
+                  placeholder="https://facebook.com/yourpage"
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   name="twitter_url"
                   label="Twitter URL"
                   value={formData.twitter_url}
                   onChange={handleInputChange}
                   fullWidth
+                  placeholder="https://twitter.com/yourhandle"
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   name="linkedin_url"
                   label="LinkedIn URL"
                   value={formData.linkedin_url}
                   onChange={handleInputChange}
                   fullWidth
+                  placeholder="https://linkedin.com/company/yourcompany"
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   name="instagram_url"
                   label="Instagram URL"
                   value={formData.instagram_url}
                   onChange={handleInputChange}
                   fullWidth
+                  placeholder="https://instagram.com/yourhandle"
                 />
               </Grid>
+
+              {/* Status Section */}
               <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.is_active}
-                      onChange={handleInputChange}
-                      name="is_active"
-                    />
-                  }
-                  label="Active"
-                />
+                <Typography variant="h6" sx={{ mb: 2, mt: 2, color: '#c41c13' }}>
+                  Status
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Box sx={{
+                  p: 2,
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  backgroundColor: formData.is_active ? '#e8f5e8' : '#fff3e0'
+                }}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={formData.is_active}
+                        onChange={handleInputChange}
+                        name="is_active"
+                        sx={{
+                          '& .MuiSwitch-switchBase.Mui-checked': {
+                            color: '#c41c13',
+                          },
+                          '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                            backgroundColor: '#c41c13',
+                          },
+                        }}
+                      />
+                    }
+                    label={
+                      <Box>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                          {formData.is_active ? 'Active Contact Information' : 'Inactive Contact Information'}
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          {formData.is_active
+                            ? 'This contact information will be displayed on the website'
+                            : 'This contact information will not be displayed on the website'
+                          }
+                        </Typography>
+                      </Box>
+                    }
+                  />
+                </Box>
               </Grid>
             </Grid>
           </DialogContent>

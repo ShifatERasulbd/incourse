@@ -15,6 +15,16 @@ class ContactController extends Controller
     public function index()
     {
         $contacts = Contact::latest()->get();
+
+        // Return JSON for API requests
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'data' => $contacts
+            ]);
+        }
+
+        // Return view for web requests
         return view('admin.contacts.index', compact('contacts'));
     }
 
@@ -23,6 +33,14 @@ class ContactController extends Controller
      */
     public function create()
     {
+        // Return JSON for API requests
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Create form data'
+            ]);
+        }
+
         return view('admin.contacts.create');
     }
 
@@ -58,7 +76,16 @@ class ContactController extends Controller
             Contact::where('is_active', true)->update(['is_active' => false]);
         }
 
-        Contact::create($validated);
+        $contact = Contact::create($validated);
+
+        // Return JSON for API requests
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Contact information created successfully.',
+                'data' => $contact
+            ], 201);
+        }
 
         return redirect()->route('admin.contacts.index')
             ->with('success', 'Contact information created successfully.');
@@ -69,6 +96,14 @@ class ContactController extends Controller
      */
     public function show(Contact $contact)
     {
+        // Return JSON for API requests
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'data' => $contact
+            ]);
+        }
+
         return view('admin.contacts.show', compact('contact'));
     }
 
@@ -77,6 +112,14 @@ class ContactController extends Controller
      */
     public function edit(Contact $contact)
     {
+        // Return JSON for API requests
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'data' => $contact
+            ]);
+        }
+
         return view('admin.contacts.edit', compact('contact'));
     }
 
@@ -121,6 +164,15 @@ class ContactController extends Controller
 
         $contact->update($validated);
 
+        // Return JSON for API requests
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Contact information updated successfully.',
+                'data' => $contact->fresh()
+            ]);
+        }
+
         return redirect()->route('admin.contacts.index')
             ->with('success', 'Contact information updated successfully.');
     }
@@ -136,6 +188,14 @@ class ContactController extends Controller
         }
 
         $contact->delete();
+
+        // Return JSON for API requests
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Contact information deleted successfully.'
+            ]);
+        }
 
         return redirect()->route('admin.contacts.index')
             ->with('success', 'Contact information deleted successfully.');
@@ -154,6 +214,15 @@ class ContactController extends Controller
         } else {
             $contact->update(['is_active' => false]);
             $message = 'Contact information deactivated successfully.';
+        }
+
+        // Return JSON for API requests
+        if (request()->expectsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'data' => $contact->fresh()
+            ]);
         }
 
         return redirect()->route('admin.contacts.index')

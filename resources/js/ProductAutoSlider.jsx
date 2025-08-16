@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
-export default function ProductAutoSlider() {
+export default function ProductAutoSlider() { 
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -1,47 +1,44 @@
+// Import necessary libraries and modules
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import frontendService from "./services/frontendService";
 import "./ProductPage.css";
 
-// Default fallback data
-const defaultProducts = [
-  { id: 1, name: "Generator 1", category: { name: "Generators" }, image_path: "Frontend/slider/slider1.jpg", short_description: "High performance generator" },
-  { id: 2, name: "Solar Panel 1", category: { name: "Solar" }, image_path: "Frontend/slider/slider2.jpg", short_description: "Efficient solar panel" },
-  { id: 3, name: "UPS 1", category: { name: "UPS" }, image_path: "Frontend/slider/slider3.jpg", short_description: "Reliable UPS backup" },
-  { id: 4, name: "Battery 1", category: { name: "Batteries" }, image_path: "Frontend/slider/slider1.jpg", short_description: "Long-lasting battery" },
-  { id: 5, name: "Inverter 1", category: { name: "Inverters" }, image_path: "Frontend/slider/slider2.jpg", short_description: "Smart inverter" },
-  { id: 6, name: "Generator 2", category: { name: "Generators" }, image_path: "Frontend/slider/slider3.jpg", short_description: "Fuel efficient model" },
-  { id: 7, name: "Solar Panel 2", category: { name: "Solar" }, image_path: "Frontend/slider/slider1.jpg", short_description: "Premium solar panel" },
-  { id: 8, name: "UPS 2", category: { name: "UPS" }, image_path: "Frontend/slider/slider2.jpg", short_description: "Compact UPS system" },
-];
-
-const defaultCategories = ["All", "Generators", "Solar", "UPS", "Batteries", "Inverters"];
-
 export default function ProductPage() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [products, setProducts] = useState(defaultProducts);
-  const [categories, setCategories] = useState(defaultCategories);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState(["All"]);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        // Fetch categories using frontend service
+        // Fetch categories
         const categoriesResult = await frontendService.getCategories();
-        if (categoriesResult.success && categoriesResult.data && categoriesResult.data.length > 0) {
-          const categoryNames = ['All', ...categoriesResult.data.map(cat => cat.name)];
-          setCategories(categoryNames);
-        }
+        const categoryArray = Array.isArray(categoriesResult.data) ? categoriesResult.data : [];
+        setCategories(['All', ...categoryArray.map(cat => cat.name)]);
 
-        // Fetch products using frontend service
+        // Fetch products
         const productsResult = await frontendService.getProducts();
-        if (productsResult.success && productsResult.data && productsResult.data.length > 0) {
-          setProducts(productsResult.data);
+        let productArray = [];
+        if (productsResult.success) {
+          // If paginated, productsResult.data.data is the array
+          if (Array.isArray(productsResult.data?.data)) {
+            productArray = productsResult.data.data;
+          } else if (Array.isArray(productsResult.data)) {
+            productArray = productsResult.data;
+          }
+        }
+        setProducts(productArray);
+        if (!Array.isArray(productArray)) {
+          setError('Failed to fetch products');
         }
       } catch (error) {
-        console.error('Failed to fetch products/categories:', error);
-        // Keep default data
+        setError('Failed to fetch products/categories');
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -75,18 +72,20 @@ export default function ProductPage() {
 
       {/* Products */}
       <section className="product-cards">
-        {filteredProducts.map((p) => (
+        {loading && <div>Loading products...</div>}
+        {error && <div style={{ color: "red" }}>{error}</div>}
+        {!loading && !error && filteredProducts.length === 0 && (
+          <div>No products found.</div>
+        )}
+        {!loading && !error && filteredProducts.map((p) => (
           <div className="product-card" key={p.id}>
             <img
-              src={p.image_path ?
-                `/${p.image_path}` :
-                "/Frontend/slider/slider1.jpg"
-              }
+              src={p.image_path ? `/${p.image_path}` : "/Frontend/slider/slider1.jpg"}
               alt={p.name}
             />
             <h3>{p.name}</h3>
             <p>{p.short_description || p.description}</p>
-            {p.price && <div className="price">${p.price}</div>}
+        
             <button
               className="view-btn"
               onClick={() => navigate(`/products/${p.id}`)}

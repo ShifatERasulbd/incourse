@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -7,11 +8,10 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     fetchProductDetails();
+    // eslint-disable-next-line
   }, [id]);
 
   const fetchProductDetails = async () => {
@@ -19,502 +19,183 @@ const ProductDetailPage = () => {
       setLoading(true);
       const response = await fetch(`/api/products/${id}`);
       const result = await response.json();
-      
       if (result.success) {
         setProduct(result.data);
       } else {
         setError(result.message || 'Product not found');
       }
     } catch (error) {
-      console.error('Error fetching product details:', error);
       setError('Failed to load product details');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuantityChange = (change) => {
-    const newQuantity = quantity + change;
-    if (newQuantity >= 1 && newQuantity <= (product?.stock_quantity || 1)) {
-      setQuantity(newQuantity);
-    }
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(price);
-  };
-
-  if (loading) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '400px',
-        fontSize: '1.2rem',
-        color: '#666'
-      }}>
-        Loading product details...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '400px',
-        fontSize: '1.2rem',
-        color: '#666',
-        textAlign: 'center'
-      }}>
-        <h2 style={{ color: '#c41c13', marginBottom: '1rem' }}>Product Not Found</h2>
-        <p>{error}</p>
-        <button 
-          onClick={() => navigate('/products')}
-          style={{
-            marginTop: '1rem',
-            padding: '0.75rem 1.5rem',
-            backgroundColor: '#c41c13',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '1rem'
-          }}
-        >
-          Back to Products
-        </button>
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '400px',
-        fontSize: '1.2rem',
-        color: '#666'
-      }}>
-        Product not available.
-      </div>
-    );
-  }
+  if (loading) return <div className="product-detail-loading">Loading product details...</div>;
+  if (error) return (
+    <div className="product-detail-error">
+      <h2>Product Not Found</h2>
+      <p>{error}</p>
+      <button onClick={() => navigate('/products')}>Back to Products</button>
+    </div>
+  );
+  if (!product) return null;
 
   return (
-    <div style={{ 
-      maxWidth: '1200px', 
-      margin: '0 auto', 
-      padding: '2rem',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      {/* Breadcrumb */}
-      <nav style={{ marginBottom: '2rem', fontSize: '0.9rem', color: '#666' }}>
-        <span 
-          onClick={() => navigate('/')}
-          style={{ cursor: 'pointer', color: '#c41c13' }}
-        >
-          Home
-        </span>
-        <span style={{ margin: '0 0.5rem' }}>/</span>
-        <span 
-          onClick={() => navigate('/products')}
-          style={{ cursor: 'pointer', color: '#c41c13' }}
-        >
-          Products
-        </span>
-        <span style={{ margin: '0 0.5rem' }}>/</span>
-        <span>{product.name}</span>
-      </nav>
-
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: '1fr 1fr', 
-        gap: '3rem',
-        marginBottom: '3rem'
-      }}>
-        {/* Product Images */}
-        <div>
-          <div style={{ 
-            marginBottom: '1rem',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            overflow: 'hidden'
-          }}>
-            <img
-              src={`/${product.image_path}`}
-              alt={product.name}
-              style={{ 
-                width: '100%', 
-                height: '400px', 
-                objectFit: 'cover',
-                display: 'block'
-              }}
-              onError={(e) => {
-                e.target.src = '/Frontend/slider/slider1.jpg'; // fallback image
-              }}
-            />
-          </div>
-          
-          {/* Category Badge */}
+    <div className="product-detail-main">
+      <div className="product-detail-grid">
+        {/* Left: Product Image */}
+        <div className="product-detail-image">
+          <img
+            src={`/${product.image_path}`}
+            alt={product.name}
+            onError={e => { e.target.src = '/Frontend/slider/slider1.jpg'; }}
+          />
           {product.category && (
-            <div style={{ 
-              display: 'inline-block',
-              backgroundColor: '#c41c13',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '20px',
-              fontSize: '0.9rem',
-              marginBottom: '1rem'
-            }}>
-              {product.category.name}
-            </div>
+            <span className="product-detail-category">{product.category.name}</span>
           )}
         </div>
-
-        {/* Product Info */}
-        <div>
-          <h1 style={{ 
-            fontSize: '2.5rem', 
-            marginBottom: '1rem',
-            color: '#272863',
-            lineHeight: '1.2'
-          }}>
-            {product.name}
-          </h1>
-
-          {product.sku && (
-            <p style={{ 
-              color: '#666', 
-              marginBottom: '1rem',
-              fontSize: '0.9rem'
-            }}>
-              SKU: {product.sku}
-            </p>
-          )}
-
-          {product.price && (
-            <div style={{ 
-              fontSize: '2rem', 
-              fontWeight: 'bold', 
-              color: '#c41c13',
-              marginBottom: '1.5rem'
-            }}>
-              {formatPrice(product.price)}
-            </div>
-          )}
-
-          {product.short_description && (
-            <p style={{ 
-              fontSize: '1.1rem', 
-              lineHeight: '1.6',
-              color: '#555',
-              marginBottom: '2rem'
-            }}>
-              {product.short_description}
-            </p>
-          )}
-
-          {/* Stock Status */}
-          <div style={{ marginBottom: '2rem' }}>
-            <span style={{ 
-              color: product.stock_quantity > 0 ? '#28a745' : '#dc3545',
-              fontWeight: 'bold'
-            }}>
-              {product.stock_quantity > 0 
-                ? `In Stock (${product.stock_quantity} available)` 
-                : 'Out of Stock'
-              }
-            </span>
-          </div>
-
-          {/* Quantity Selector */}
-          {product.stock_quantity > 0 && (
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '1rem',
-              marginBottom: '2rem'
-            }}>
-              <span style={{ fontWeight: 'bold' }}>Quantity:</span>
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center',
-                border: '1px solid #ddd',
-                borderRadius: '5px'
-              }}>
-                <button
-                  onClick={() => handleQuantityChange(-1)}
-                  disabled={quantity <= 1}
-                  style={{
-                    padding: '0.5rem 0.75rem',
-                    border: 'none',
-                    backgroundColor: 'transparent',
-                    cursor: quantity > 1 ? 'pointer' : 'not-allowed',
-                    fontSize: '1.2rem'
-                  }}
-                >
-                  -
-                </button>
-                <span style={{ 
-                  padding: '0.5rem 1rem',
-                  borderLeft: '1px solid #ddd',
-                  borderRight: '1px solid #ddd',
-                  minWidth: '60px',
-                  textAlign: 'center'
-                }}>
-                  {quantity}
-                </span>
-                <button
-                  onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= product.stock_quantity}
-                  style={{
-                    padding: '0.5rem 0.75rem',
-                    border: 'none',
-                    backgroundColor: 'transparent',
-                    cursor: quantity < product.stock_quantity ? 'pointer' : 'not-allowed',
-                    fontSize: '1.2rem'
-                  }}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div style={{ 
-            display: 'flex', 
-            gap: '1rem',
-            marginBottom: '2rem'
-          }}>
-            <button
-              disabled={product.stock_quantity === 0}
-              style={{
-                flex: 1,
-                padding: '1rem 2rem',
-                backgroundColor: product.stock_quantity > 0 ? '#c41c13' : '#ccc',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                cursor: product.stock_quantity > 0 ? 'pointer' : 'not-allowed',
-                transition: 'background-color 0.3s'
-              }}
-              onMouseEnter={(e) => {
-                if (product.stock_quantity > 0) {
-                  e.target.style.backgroundColor = '#a01610';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (product.stock_quantity > 0) {
-                  e.target.style.backgroundColor = '#c41c13';
-                }
-              }}
-            >
-              {product.stock_quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
-            </button>
-            
-            <button
-              onClick={() => navigate('/products')}
-              style={{
-                padding: '1rem 2rem',
-                backgroundColor: 'transparent',
-                color: '#c41c13',
-                border: '2px solid #c41c13',
-                borderRadius: '5px',
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#c41c13';
-                e.target.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'transparent';
-                e.target.style.color = '#c41c13';
-              }}
-            >
+        {/* Right: Product Details */}
+        <div className="product-detail-info">
+          <h1>{product.name}</h1>
+            {/* Description and Specs */}
+      <div className="product-detail-extra">
+      
+        <div dangerouslySetInnerHTML={{ __html: product.description }} />
+        {product.specifications && Object.keys(product.specifications).length > 0 && (
+          <>
+          
+         
+          </>
+        )}
+      </div>
+          
+          <div className="product-detail-actions">
+            <button onClick={() => navigate('/products')} className="secondary">
               Back to Products
             </button>
           </div>
-
-          {/* Features */}
           {product.features && product.features.length > 0 && (
-            <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{ 
-                color: '#272863', 
-                marginBottom: '1rem',
-                fontSize: '1.3rem'
-              }}>
-                Key Features
-              </h3>
-              <ul style={{ 
-                listStyle: 'none', 
-                padding: 0,
-                margin: 0
-              }}>
-                {product.features.map((feature, index) => (
-                  <li key={index} style={{ 
-                    padding: '0.5rem 0',
-                    borderBottom: '1px solid #eee',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}>
-                    <span style={{ 
-                      color: '#c41c13', 
-                      marginRight: '0.5rem',
-                      fontSize: '1.2rem'
-                    }}>
-                      ✓
-                    </span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className="product-detail-features">
+              {product.features.map((f, i) => <li key={i}>✓ {f}</li>)}
+            </ul>
           )}
         </div>
       </div>
-
-      {/* Product Description */}
-      <div style={{
-        backgroundColor: '#f8f9fa',
-        padding: '2rem',
-        borderRadius: '8px',
-        marginBottom: '3rem'
-      }}>
-        <h2 style={{
-          color: '#272863',
-          marginBottom: '1.5rem',
-          fontSize: '2rem'
-        }}>
-          Product Description
-        </h2>
-        <div
-          style={{
-            lineHeight: '1.8',
-            fontSize: '1rem',
-            color: '#555'
-          }}
-          dangerouslySetInnerHTML={{ __html: product.description }}
-        />
-      </div>
-
-      {/* Specifications */}
-      {product.specifications && Object.keys(product.specifications).length > 0 && (
-        <div style={{
-          backgroundColor: 'white',
-          border: '1px solid #ddd',
-          borderRadius: '8px',
-          padding: '2rem',
-          marginBottom: '3rem'
-        }}>
-          <h2 style={{
-            color: '#272863',
-            marginBottom: '1.5rem',
-            fontSize: '2rem'
-          }}>
-            Specifications
-          </h2>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '1rem'
-          }}>
-            {Object.entries(product.specifications).map(([key, value], index) => (
-              <div key={index} style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '0.75rem',
-                backgroundColor: index % 2 === 0 ? '#f8f9fa' : 'white',
-                borderRadius: '5px'
-              }}>
-                <span style={{ fontWeight: 'bold', color: '#272863' }}>
-                  {key}:
-                </span>
-                <span style={{ color: '#555' }}>
-                  {value}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Related Products Section Placeholder */}
-      <div style={{
-        textAlign: 'center',
-        padding: '3rem 0',
-        borderTop: '1px solid #ddd'
-      }}>
-        <h2 style={{
-          color: '#272863',
-          marginBottom: '1rem',
-          fontSize: '2rem'
-        }}>
-          Related Products
-        </h2>
-        <p style={{ color: '#666', marginBottom: '2rem' }}>
-          Discover more products in the {product.category?.name} category
-        </p>
-        <button
-          onClick={() => navigate('/products')}
-          style={{
-            padding: '1rem 2rem',
-            backgroundColor: '#c41c13',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            fontSize: '1.1rem',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            transition: 'background-color 0.3s'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#a01610';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#c41c13';
-          }}
-        >
-          View All Products
-        </button>
-      </div>
-
-      {/* Mobile Responsive Styles */}
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .product-detail-container {
-            padding: 1rem !important;
+    
+      <style>{`
+        .product-detail-main {
+          max-width: 1100px;
+          margin: 2rem auto;
+          padding: 2rem 1rem;
+          font-family: Arial, sans-serif;
+        }
+        .product-detail-grid {
+          display: flex;
+          gap: 2.5rem;
+          margin-bottom: 2.5rem;
+          flex-wrap: wrap;
+        }
+        .product-detail-image {
+          flex: 1 1 350px;
+          max-width: 420px;
+          position: relative;
+        }
+        .product-detail-image img {
+          width: 100%;
+          height: 400px;
+          object-fit: cover;
+          border-radius: 12px;
+          border: 1px solid #eee;
+        }
+        .product-detail-category {
+          position: absolute;
+          left: 1rem;
+          bottom: 1rem;
+          background: #c41c13;
+          color: #fff;
+          padding: 0.4rem 1.2rem;
+          border-radius: 20px;
+          font-size: 1rem;
+        }
+        .product-detail-info {
+          flex: 2 1 400px;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .product-detail-info h1 {
+          font-size: 2.2rem;
+          color: #272863;
+          margin-bottom: 0.5rem;
+        }
+        .product-detail-sku {
+          color: #888;
+          font-size: 0.95rem;
+        }
+        .product-detail-price {
+          font-size: 2rem;
+          color: #c41c13;
+          font-weight: bold;
+        }
+        .product-detail-stock .in-stock {
+          color: #28a745;
+          font-weight: bold;
+        }
+        .product-detail-stock .out-stock {
+          color: #dc3545;
+          font-weight: bold;
+        }
+        .product-detail-short {
+          font-size: 1.1rem;
+          color: #555;
+        }
+        .product-detail-actions {
+          display: flex;
+          gap: 1rem;
+          margin: 1.5rem 0;
+        }
+        .product-detail-actions button {
+          padding: 0.8rem 2rem;
+          font-size: 1.1rem;
+          border: none;
+          border-radius: 5px;
+          background: #c41c13;
+          color: #fff;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .product-detail-actions button.secondary {
+          background: #fff;
+          color: #c41c13;
+          border: 2px solid #c41c13;
+        }
+        .product-detail-actions button:disabled {
+          background: #ccc;
+          color: #fff;
+          cursor: not-allowed;
+        }
+        .product-detail-features {
+          margin-top: 1.5rem;
+          padding-left: 1.2rem;
+        }
+        .product-detail-features li {
+          margin-bottom: 0.5rem;
+          color: #272863;
+        }
+        .product-detail-extra {
+          background: #f8f9fa;
+          border-radius: 8px;
+          padding: 2rem;
+        }
+        @media (max-width: 900px) {
+          .product-detail-grid {
+            flex-direction: column;
+            gap: 2rem;
           }
-          .product-grid {
-            grid-template-columns: 1fr !important;
-            gap: 2rem !important;
-          }
-          .product-title {
-            font-size: 2rem !important;
-          }
-          .product-price {
-            font-size: 1.5rem !important;
-          }
-          .action-buttons {
-            flex-direction: column !important;
-          }
-          .specifications-grid {
-            grid-template-columns: 1fr !important;
+          .product-detail-image img {
+            height: 300px;
           }
         }
       `}</style>

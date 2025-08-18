@@ -69,6 +69,7 @@ const Layout = () => {
     { text: 'Counters', icon: <CountersIcon />, path: '/admin/counters' },
     { text: 'Sliders', icon: <SlidersIcon />, path: '/admin/sliders' },
     { text: 'About Us', icon: <AboutIcon />, path: '/admin/about-us' },
+    { text: 'Messages', icon: <ContactIcon />, path: '/admin/messages' },
     { text: 'Settings', icon: <SettingsIcon />, path: '/admin/settings' },
   ];
 

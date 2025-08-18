@@ -62,20 +62,24 @@ export default function ContactUs() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       setStatus('Please fill in all fields.');
       return;
     }
-
     setStatus('Sending...');
-
-    setTimeout(() => {
-      setStatus('Message sent successfully!');
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 1500);
+    try {
+      const res = await axios.post('/api/messages', formData);
+      if (res.data.success) {
+        setStatus('Message sent successfully!');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setStatus('Failed to send message.');
+      }
+    } catch (err) {
+      setStatus('Failed to send message.');
+    }
   };
 
   if (loading) {

@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Http\Request;
@@ -46,6 +47,8 @@ Route::get('/debug/blogs', [FrontendController::class, 'debugBlogs']);
 Route::get('/why-choose-us/active', [WhyChooseUsController::class, 'getActive']);
 Route::get('/counters/active', [CounterController::class, 'getActive']);
 Route::get('/contact', [FrontendController::class, 'getContact']);
+// Public message submission route
+Route::post('/messages', [\App\Http\Controllers\MessagePublicController::class, 'store']);
 
 // Frontend data endpoints - Optimized for frontend consumption
 Route::prefix('frontend')->group(function () {
@@ -62,6 +65,9 @@ Route::prefix('frontend')->group(function () {
     Route::get('/why-choose-us', [FrontendController::class, 'getWhyChooseUs']);
     Route::get('/counters', [FrontendController::class, 'getCounters']);
     Route::get('/contact', [FrontendController::class, 'getContact']);
+    Route::get('/messages', [\App\Http\Controllers\Admin\MessageController::class, 'index']);
+    Route::get('/messages/{id}', [\App\Http\Controllers\Admin\MessageController::class, 'show']);
+    Route::delete('/messages/{id}', [\App\Http\Controllers\Admin\MessageController::class, 'destroy']);
 
     // Public settings endpoint (for admin panel without auth)
     Route::get('/admin/settings/public', [App\Http\Controllers\Admin\SettingController::class, 'publicIndex']);
@@ -103,6 +109,9 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     // Contact management routes
     Route::apiResource('contacts', ContactController::class);
     Route::post('/contacts/{contact}/toggle-active', [ContactController::class, 'toggleActive']);
+
+    // Message management routes
+    
 
  
 });

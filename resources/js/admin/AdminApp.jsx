@@ -17,6 +17,7 @@ import AboutUsManagement from './pages/AboutUsManagement';
 import Contacts from './pages/Contacts';
 import Settings from './pages/Settings';
 import ProtectedRoute from './components/ProtectedRoute';
+import Messages from './pages/Messages';
 
 const theme = createTheme({
   palette: {
@@ -54,6 +55,7 @@ function AdminApp() {
               <Route path="sliders" element={<Sliders />} />
               <Route path="about-us" element={<AboutUsManagement />} />
               <Route path="contacts" element={<Contacts />} />
+              <Route path="messages" element={<Messages />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>

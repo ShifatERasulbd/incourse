@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\WhyChooseUsController;
 use App\Http\Controllers\Api\CounterController;
 use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\FrontendController;
 
@@ -65,15 +66,18 @@ Route::prefix('frontend')->group(function () {
     Route::get('/why-choose-us', [FrontendController::class, 'getWhyChooseUs']);
     Route::get('/counters', [FrontendController::class, 'getCounters']);
     Route::get('/contact', [FrontendController::class, 'getContact']);
-    Route::get('/messages', [\App\Http\Controllers\Admin\MessageController::class, 'index']);
-    Route::get('/messages/{id}', [\App\Http\Controllers\Admin\MessageController::class, 'show']);
-    Route::delete('/messages/{id}', [\App\Http\Controllers\Admin\MessageController::class, 'destroy']);
-
+  
     // Public settings endpoint (for admin panel without auth)
     Route::get('/admin/settings/public', [App\Http\Controllers\Admin\SettingController::class, 'publicIndex']);
        // Settings management routes
     Route::apiResource('settings', SettingController::class);
     Route::post('/settings/{setting}/toggle-active', [SettingController::class, 'toggleActive']);
+});
+
+Route::prefix('admin')->group(function () {
+    Route::get('/messages', [MessageController::class, 'index']);
+    Route::get('/messages/{id}', [MessageController::class, 'show']);
+    Route::delete('/messages/{id}', [MessageController::class, 'destroy']);
 });
 
 // Admin dashboard routes

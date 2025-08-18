@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, CircularProgress, Snackbar, Alert, Button
+  Box,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  Button
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -15,7 +28,8 @@ const Messages = () => {
   const fetchMessages = async () => {
     setLoading(true);
     try {
-  const res = await axios.get('/incourse/api/messages');
+      // ✅ FIXED: Correct API endpoint
+      const res = await axios.get('http://127.0.0.1:8000/api/admin/messages');
       setMessages(res.data.data || []);
     } catch (err) {
       setSnackbar({ open: true, message: 'Failed to fetch messages', severity: 'error' });
@@ -31,7 +45,8 @@ const Messages = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this message?')) return;
     try {
-  await axios.delete(`/incourse/api/messages/${id}`);
+      // ✅ FIXED: Correct API endpoint for delete
+      await axios.delete(`http://127.0.0.1:8000/api/admin/messages/${id}`);
       setSnackbar({ open: true, message: 'Message deleted', severity: 'success' });
       setMessages(messages.filter((m) => m.id !== id));
     } catch {
@@ -61,11 +76,17 @@ const Messages = () => {
                   <TableCell>{msg.name}</TableCell>
                   <TableCell>{msg.email}</TableCell>
                   <TableCell>{msg.subject}</TableCell>
-                  <TableCell>{msg.message.length > 50 ? msg.message.slice(0, 50) + '...' : msg.message}</TableCell>
+                  <TableCell>
+                    {msg.message.length > 50 ? msg.message.slice(0, 50) + '...' : msg.message}
+                  </TableCell>
                   <TableCell>{new Date(msg.created_at).toLocaleString()}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => setViewMessage(msg)}><VisibilityIcon /></IconButton>
-                    <IconButton color="error" onClick={() => handleDelete(msg.id)}><DeleteIcon /></IconButton>
+                    <IconButton onClick={() => setViewMessage(msg)}>
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton color="error" onClick={() => handleDelete(msg.id)}>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -84,7 +105,11 @@ const Messages = () => {
           <Button variant="contained" onClick={() => setViewMessage(null)}>Close</Button>
         </Paper>
       )}
-      <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
         <Alert severity={snackbar.severity}>{snackbar.message}</Alert>
       </Snackbar>
     </Box>

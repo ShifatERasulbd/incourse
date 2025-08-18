@@ -88,7 +88,13 @@ export default function ProductPage() {
         
             <button
               className="view-btn"
-              onClick={() => navigate(`/products/${p.id}`)}
+              onClick={() => {
+                if (p.redirection_url) {
+                  window.open(p.redirection_url, '_blank');
+                } else {
+                  navigate(`/products/${p.id}`);
+                }
+              }}
             >
               View Details
             </button>

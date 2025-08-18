@@ -16,7 +16,7 @@ class Product extends Model
         'description',
         'short_description',
         'image_path',
-        'price',
+        'redirection_url',
         'sku',
         'stock_quantity',
         'category_id',
@@ -27,7 +27,7 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'redirection_url' => 'string',
         'stock_quantity' => 'integer',
         'specifications' => 'array',
         'features' => 'array',

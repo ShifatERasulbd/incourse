@@ -41,7 +41,7 @@ const Products = () => {
     name: '',
     description: '',
     short_description: '',
-    price: '',
+    redirection_url: '',
     sku: '',
     stock_quantity: '',
     category_id: '',
@@ -120,7 +120,7 @@ const Products = () => {
       name: product.name,
       description: product.description,
       short_description: product.short_description || '',
-      price: product.price || '',
+      redirection_url: product.redirection_url || '',
       sku: product.sku || '',
       stock_quantity: product.stock_quantity || '',
       category_id: product.category_id,
@@ -147,7 +147,7 @@ const Products = () => {
       name: '',
       description: '',
       short_description: '',
-      price: '',
+      redirection_url: '',
       sku: '',
       stock_quantity: '',
       category_id: '',
@@ -170,8 +170,8 @@ const Products = () => {
       submitData.append('short_description', formData.short_description.trim());
     }
     
-    if (formData.price) {
-      submitData.append('price', formData.price);
+    if (formData.redirection_url) {
+      submitData.append('redirection_url', formData.redirection_url);
     }
     
     if (formData.sku.trim()) {
@@ -232,10 +232,10 @@ const Products = () => {
       ),
     },
     {
-      field: 'price',
-      headerName: 'Price',
+      field: 'redirection_url',
+      headerName: 'redirection_url',
       width: 100,
-      valueFormatter: (params) => params.value ? `$${params.value}` : 'N/A',
+  valueFormatter: (params) => params?.value || 'N/A',
     },
     {
       field: 'stock_quantity',
@@ -396,13 +396,13 @@ const Products = () => {
               <Grid item xs={12} md={4}>
                 <TextField
                   fullWidth
-                  label="Price"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  label="redirection_url"
+                  value={formData.redirection_url}
+                  onChange={(e) => setFormData({ ...formData, redirection_url: e.target.value })}
                   margin="normal"
-                  type="number"
-                  error={!!validationErrors.price}
-                  helperText={validationErrors.price?.[0]}
+                  type="text"
+                  error={!!validationErrors.redirection_url}
+                  helperText={validationErrors.redirection_url?.[0]}
                 />
               </Grid>
               <Grid item xs={12} md={4}>

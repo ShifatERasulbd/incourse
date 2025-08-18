@@ -214,7 +214,13 @@ export default function ProductAutoSlider() {
               <p style={{ fontSize: '0.95rem', color: '#444', margin: '0 0 1rem 0' }}>{product.short_description || product.description}</p>
               <button
                 className="view-details-btn"
-                onClick={() => alert(`Viewing details for ${product.name}`)}
+                onClick={() => {
+                  if (product.redirection_url) {
+                    window.open(product.redirection_url, '_blank');
+                  } else {
+                    window.location.href = `/products/${product.id}`;
+                  }
+                }}
               >
                 View Details
               </button>
